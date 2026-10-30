@@ -1,0 +1,3743 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#050609">
+<meta name="description" content="AFTER//ZERO — The Last Digital Civilization. Offline Digital World & Knowledge Archive.">
+<title>AFTER//ZERO — The Last Digital Civilization</title>
+<style>
+:root {
+  --deep-black: #050609;
+  --obsidian: #0B0E13;
+  --charcoal: #151A22;
+  --electric-blue: #168CFF;
+  --cyan: #00E5FF;
+  --neon-purple: #9B5CFF;
+  --alert-red: #FF3B45;
+  --burnt-orange: #FF8A35;
+  --muted-text: #8793A4;
+  --primary-text: #E8EDF5;
+  --border: rgba(22,140,255,0.25);
+  --glow: 0 0 12px rgba(22,140,255,0.35);
+  --font-mono: 'Courier New', Courier, monospace;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --sidebar-w: 260px;
+  --header-h: 52px;
+  --radius: 2px;
+  --transition: 0.18s ease;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  background: var(--deep-black);
+  color: var(--primary-text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--obsidian); }
+::-webkit-scrollbar-thumb { background: var(--charcoal); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--electric-blue); }
+
+/* Layout */
+#app { display: flex; flex-direction: column; height: 100vh; }
+#header {
+  height: var(--header-h);
+  background: var(--obsidian);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  z-index: 100;
+  flex-shrink: 0;
+}
+#logo {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 1.5px;
+  color: var(--cyan);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+#logo span { color: var(--muted-text); font-weight: 400; font-size: 11px; letter-spacing: 0.5px; }
+#header-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted-text);
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #2ecc71;
+  box-shadow: 0 0 6px #2ecc71;
+}
+.status-dot.warn { background: var(--burnt-orange); box-shadow: 0 0 6px var(--burnt-orange); }
+.status-dot.crit { background: var(--alert-red); box-shadow: 0 0 6px var(--alert-red); }
+
+#main { display: flex; flex: 1; overflow: hidden; }
+#sidebar {
+  width: var(--sidebar-w);
+  background: var(--obsidian);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+#nav { flex: 1; padding: 8px 0; }
+.nav-section {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--muted-text);
+  padding: 12px 16px 6px;
+  text-transform: uppercase;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+  color: var(--muted-text);
+  transition: all var(--transition);
+  border-left: 2px solid transparent;
+  font-size: 13px;
+  user-select: none;
+}
+.nav-item:hover { background: rgba(22,140,255,0.06); color: var(--primary-text); }
+.nav-item.active {
+  background: rgba(22,140,255,0.1);
+  color: var(--cyan);
+  border-left-color: var(--cyan);
+}
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.8; }
+#content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--deep-black);
+  position: relative;
+}
+.view {
+  display: none;
+  flex: 1;
+  overflow: auto;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+.view.active { display: flex; flex-direction: column; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Typography */
+h1 { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
+h2 { font-size: 15px; font-weight: 600; color: var(--cyan); margin-bottom: 12px; letter-spacing: 0.3px; }
+h3 { font-size: 13px; font-weight: 600; color: var(--primary-text); margin-bottom: 8px; }
+.subtitle { font-size: 12px; color: var(--muted-text); margin-bottom: 20px; }
+.mono { font-family: var(--font-mono); }
+
+/* Panels & Cards */
+.panel {
+  background: var(--obsidian);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(22,140,255,0.12);
+}
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 1100px) {
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 700px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  #sidebar { position: fixed; left: -100%; top: var(--header-h); bottom: 0; z-index: 90; transition: left 0.25s; }
+  #sidebar.open { left: 0; }
+  .mobile-menu-btn { display: flex !important; }
+}
+
+/* Stat cards */
+.stat-card {
+  background: var(--charcoal);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--electric-blue), var(--cyan));
+}
+.stat-label { font-size: 10px; letter-spacing: 1px; color: var(--muted-text); text-transform: uppercase; margin-bottom: 6px; font-family: var(--font-mono); }
+.stat-value { font-size: 22px; font-weight: 600; font-family: var(--font-mono); color: var(--primary-text); }
+.stat-value.cyan { color: var(--cyan); }
+.stat-value.orange { color: var(--burnt-orange); }
+.stat-value.red { color: var(--alert-red); }
+.stat-value.green { color: #2ecc71; }
+.stat-sub { font-size: 11px; color: var(--muted-text); margin-top: 4px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--primary-text);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--electric-blue); background: rgba(22,140,255,0.08); color: var(--cyan); }
+.btn:active { transform: scale(0.97); }
+.btn.primary { background: rgba(22,140,255,0.15); border-color: var(--electric-blue); color: var(--cyan); }
+.btn.primary:hover { background: rgba(22,140,255,0.25); }
+.btn.danger { border-color: rgba(255,59,69,0.4); color: var(--alert-red); }
+.btn.danger:hover { background: rgba(255,59,69,0.1); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Forms */
+input, select, textarea {
+  background: var(--charcoal);
+  border: 1px solid var(--border);
+  color: var(--primary-text);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color var(--transition);
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--electric-blue); }
+label { display: block; font-size: 11px; color: var(--muted-text); margin-bottom: 4px; letter-spacing: 0.3px; }
+.form-row { margin-bottom: 12px; }
+.form-inline { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.form-inline .form-row { flex: 1; min-width: 120px; margin-bottom: 0; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--muted-text); font-weight: 500; font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase; font-family: var(--font-mono); }
+td { padding: 8px 10px; border-bottom: 1px solid rgba(22,140,255,0.08); }
+tr:hover td { background: rgba(22,140,255,0.04); }
+
+/* Logs */
+.log-entry {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(22,140,255,0.06);
+  display: flex;
+  gap: 10px;
+}
+.log-time { color: var(--muted-text); min-width: 70px; }
+.log-msg { color: var(--primary-text); }
+.log-msg.warn { color: var(--burnt-orange); }
+.log-msg.crit { color: var(--alert-red); }
+.log-msg.ok { color: #2ecc71; }
+
+/* Search */
+.search-box {
+  position: relative;
+  margin-bottom: 16px;
+}
+.search-box input {
+  padding-left: 36px;
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-text);
+  pointer-events: none;
+}
+
+/* Article */
+.article-list { display: flex; flex-direction: column; gap: 8px; }
+.article-item {
+  background: var(--charcoal);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.article-item:hover { border-color: var(--electric-blue); background: rgba(22,140,255,0.06); }
+.article-title { font-weight: 600; margin-bottom: 4px; color: var(--primary-text); }
+.article-meta { font-size: 11px; color: var(--muted-text); display: flex; gap: 12px; }
+.article-domain { color: var(--cyan); }
+.article-content {
+  background: var(--obsidian);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 900px;
+  line-height: 1.65;
+}
+.article-content h1 { font-size: 22px; margin-bottom: 8px; }
+.article-content h2 { margin-top: 24px; margin-bottom: 10px; }
+.article-content h3 { margin-top: 18px; }
+.article-content p { margin-bottom: 12px; color: #c5ced9; }
+.article-content ul, .article-content ol { margin: 0 0 12px 20px; color: #c5ced9; }
+.article-content li { margin-bottom: 4px; }
+.article-content code {
+  background: var(--charcoal);
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--cyan);
+}
+.article-content pre {
+  background: var(--charcoal);
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  margin: 12px 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.article-content .equation {
+  background: var(--charcoal);
+  border-left: 3px solid var(--electric-blue);
+  padding: 12px 16px;
+  margin: 14px 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--cyan);
+}
+.tag {
+  display: inline-block;
+  background: rgba(22,140,255,0.12);
+  color: var(--cyan);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-right: 4px;
+  letter-spacing: 0.3px;
+}
+
+/* Planet canvas */
+#planet-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  background: #020308;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+#planet-canvas { width: 100%; height: 100%; display: block; }
+.planet-overlay {
+  position: absolute;
+  top: 12px; left: 12px;
+  background: rgba(5,6,9,0.85);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border-radius: var(--radius);
+  pointer-events: none;
+}
+.planet-controls {
+  position: absolute;
+  bottom: 12px; left: 12px; right: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Simulator */
+.resource-bar {
+  height: 6px;
+  background: var(--charcoal);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.resource-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+.resource-fill.water { background: linear-gradient(90deg, #168CFF, #00E5FF); }
+.resource-fill.food { background: linear-gradient(90deg, #2ecc71, #27ae60); }
+.resource-fill.energy { background: linear-gradient(90deg, #f1c40f, #FF8A35); }
+.resource-fill.materials { background: linear-gradient(90deg, #9B5CFF, #8e44ad); }
+.resource-fill.medical { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.modal-backdrop.show { display: flex; }
+.modal {
+  background: var(--obsidian);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.modal h2 { margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+/* Toast */
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  background: var(--obsidian);
+  border: 1px solid var(--border);
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  animation: slideIn 0.25s ease;
+  max-width: 340px;
+}
+.toast.ok { border-left: 3px solid #2ecc71; }
+.toast.warn { border-left: 3px solid var(--burnt-orange); }
+.toast.err { border-left: 3px solid var(--alert-red); }
+@keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* Performance */
+#perf-panel {
+  position: fixed;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(5,6,9,0.9);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted-text);
+  border-radius: var(--radius);
+  z-index: 50;
+  display: none;
+}
+#perf-panel.show { display: block; }
+
+/* RTL */
+[dir="rtl"] #sidebar { border-right: none; border-left: 1px solid var(--border); }
+[dir="rtl"] .nav-item { border-left: none; border-right: 2px solid transparent; }
+[dir="rtl"] .nav-item.active { border-right-color: var(--cyan); }
+[dir="rtl"] #header-status { margin-left: 0; margin-right: auto; }
+
+/* Mobile menu */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--primary-text);
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-size: 16px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted-text);
+}
+.empty-state h3 { color: var(--primary-text); margin-bottom: 8px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  color: var(--muted-text);
+  border-bottom: 2px solid transparent;
+  font-size: 13px;
+  transition: all var(--transition);
+}
+.tab:hover { color: var(--primary-text); }
+.tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+/* Loading */
+.spinner {
+  width: 24px; height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 20px auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 20px;
+  padding-left: 16px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -22px; top: 4px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--electric-blue);
+  border: 2px solid var(--deep-black);
+}
+.timeline-item.fictional::before { background: var(--neon-purple); }
+.timeline-era { font-family: var(--font-mono); font-size: 10px; color: var(--cyan); letter-spacing: 1px; margin-bottom: 4px; }
+.timeline-title { font-weight: 600; margin-bottom: 4px; }
+.timeline-desc { font-size: 12px; color: var(--muted-text); }
+
+/* Mission card */
+.mission-card {
+  background: var(--charcoal);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.mission-status {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+}
+.mission-status.active { background: rgba(46,204,113,0.15); color: #2ecc71; }
+.mission-status.available { background: rgba(22,140,255,0.15); color: var(--cyan); }
+.mission-status.completed { background: rgba(155,92,255,0.15); color: var(--neon-purple); }
+.mission-status.locked { background: rgba(135,147,164,0.15); color: var(--muted-text); }
+
+/* Calculator */
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.calc-result {
+  background: var(--charcoal);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--cyan);
+  padding: 14px;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+}
+.calc-result .label { font-size: 11px; color: var(--muted-text); margin-bottom: 4px; }
+.calc-result .value { font-size: 20px; color: var(--cyan); }
+
+/* Utility */
+.flex { display: flex; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.hidden { display: none !important; }
+.text-cyan { color: var(--cyan); }
+.text-muted { color: var(--muted-text); }
+.text-sm { font-size: 12px; }
+.w-full { width: 100%; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="header">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">☰</button>
+    <div id="logo">AFTER//ZERO <span>THE LAST DIGITAL CIVILIZATION</span></div>
+    <div id="header-status">
+      <span id="worldDate">2097.03.14</span>
+      <span class="status-dot" id="sysStatus"></span>
+      <span id="sysStatusText">SYSTEM ONLINE</span>
+      <span id="clock">--:--:--</span>
+    </div>
+  </header>
+  <div id="main">
+    <nav id="sidebar">
+      <div id="nav">
+        <div class="nav-section" data-i18n="nav_command">COMMAND</div>
+        <div class="nav-item active" data-view="overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span data-i18n="nav_overview">World Overview</span>
+        </div>
+        <div class="nav-item" data-view="planet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span data-i18n="nav_planet">Planetary Atlas</span>
+        </div>
+        <div class="nav-item" data-view="simulator">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <span data-i18n="nav_simulator">Survival Simulator</span>
+        </div>
+        <div class="nav-item" data-view="missions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span data-i18n="nav_missions">Missions</span>
+        </div>
+
+        <div class="nav-section" data-i18n="nav_knowledge">KNOWLEDGE</div>
+        <div class="nav-item" data-view="archive">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span data-i18n="nav_archive">Knowledge Archive</span>
+        </div>
+        <div class="nav-item" data-view="lab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v7l4 9H5l4-9V3z"/><path d="M9 3h6"/></svg>
+          <span data-i18n="nav_lab">Scientific Lab</span>
+        </div>
+        <div class="nav-item" data-view="engineering">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <span data-i18n="nav_engineering">Rebuild Engineering</span>
+        </div>
+        <div class="nav-item" data-view="environment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          <span data-i18n="nav_environment">Environment Engine</span>
+        </div>
+
+        <div class="nav-section" data-i18n="nav_archive_sys">ARCHIVE SYSTEM</div>
+        <div class="nav-item" data-view="timeline">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span data-i18n="nav_timeline">Civilization Timeline</span>
+        </div>
+        <div class="nav-item" data-view="manager">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+          <span data-i18n="nav_manager">Archive Manager</span>
+        </div>
+        <div class="nav-item" data-view="system">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span data-i18n="nav_system">System</span>
+        </div>
+      </div>
+    </nav>
+    <div id="content">
+      <!-- Views injected by JS -->
+    </div>
+  </div>
+</div>
+<div id="toast-container"></div>
+<div id="perf-panel"></div>
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+/* ============================================================
+   AFTER//ZERO — The Last Digital Civilization
+   Offline Digital World & Knowledge Archive
+   Built with vanilla JS, WebGL2, IndexedDB, Web Crypto
+   ============================================================ */
+
+(function() {
+'use strict';
+
+// ============================================================
+//  LOCALIZATION
+// ============================================================
+const I18N = {
+  en: {
+    nav_command: 'COMMAND', nav_knowledge: 'KNOWLEDGE', nav_archive_sys: 'ARCHIVE SYSTEM',
+    nav_overview: 'World Overview', nav_planet: 'Planetary Atlas', nav_simulator: 'Survival Simulator',
+    nav_missions: 'Missions', nav_archive: 'Knowledge Archive', nav_lab: 'Scientific Lab',
+    nav_engineering: 'Rebuild Engineering', nav_environment: 'Environment Engine',
+    nav_timeline: 'Civilization Timeline', nav_manager: 'Archive Manager', nav_system: 'System',
+    world_overview: 'World Overview', world_subtitle: 'Civilization Control Center — 2097',
+    civ_status: 'Civilization Status', env_conditions: 'Environmental Conditions',
+    resources: 'Critical Resources', infrastructure: 'Infrastructure', archive_integrity: 'Archive Integrity',
+    active_missions: 'Active Missions', recent_discoveries: 'Recent Discoveries', system_log: 'System Activity Log',
+    search_placeholder: 'Search knowledge archive...',
+    lang: 'Language', theme: 'Theme', graphics: 'Graphics Quality',
+    export_data: 'Export Archive', import_data: 'Import Archive', backup: 'Full Backup',
+    save: 'Save', cancel: 'Cancel', delete: 'Delete', create: 'Create', edit: 'Edit',
+    confirm: 'Confirm', close: 'Close', reset: 'Reset', calculate: 'Calculate',
+    no_results: 'No results found', loading: 'Loading...',
+    fictional_note: 'This timeline is fictional world-building for AFTER//ZERO.',
+    sim_note: 'Simulation results are deterministic educational models, not scientific predictions.',
+  },
+  fa: {
+    nav_command: 'فرماندهی', nav_knowledge: 'دانش', nav_archive_sys: 'سامانه آرشیو',
+    nav_overview: 'نمای کلی جهان', nav_planet: 'اطلس سیاره‌ای', nav_simulator: 'شبیه‌ساز بقا',
+    nav_missions: 'مأموریت‌ها', nav_archive: 'آرشیو دانش', nav_lab: 'آزمایشگاه علمی',
+    nav_engineering: 'مهندسی بازسازی', nav_environment: 'موتور محیط',
+    nav_timeline: 'خط زمانی تمدن', nav_manager: 'مدیر آرشیو', nav_system: 'سامانه',
+    world_overview: 'نمای کلی جهان', world_subtitle: 'مرکز کنترل تمدن — ۲۰۹۷',
+    civ_status: 'وضعیت تمدن', env_conditions: 'شرایط محیطی',
+    resources: 'منابع حیاتی', infrastructure: 'زیرساخت', archive_integrity: 'یکپارچگی آرشیو',
+    active_missions: 'مأموریت‌های فعال', recent_discoveries: 'اکتشافات اخیر', system_log: 'گزارش فعالیت سامانه',
+    search_placeholder: 'جستجو در آرشیو دانش...',
+    lang: 'زبان', theme: 'پوسته', graphics: 'کیفیت گرافیک',
+    export_data: 'خروجی آرشیو', import_data: 'ورودی آرشیو', backup: 'پشتیبان کامل',
+    save: 'ذخیره', cancel: 'لغو', delete: 'حذف', create: 'ایجاد', edit: 'ویرایش',
+    confirm: 'تأیید', close: 'بستن', reset: 'بازنشانی', calculate: 'محاسبه',
+    no_results: 'نتیجه‌ای یافت نشد', loading: 'در حال بارگذاری...',
+    fictional_note: 'این خط زمانی داستان‌پردازی تخیلی برای AFTER//ZERO است.',
+    sim_note: 'نتایج شبیه‌سازی مدل‌های آموزشی قطعی هستند، نه پیش‌بینی‌های علمی.',
+  }
+};
+
+// ============================================================
+//  APPLICATION STATE
+// ============================================================
+const AppState = {
+  lang: 'en',
+  currentView: 'overview',
+  graphicsQuality: 'medium',
+  reducedMotion: false,
+  dbReady: false,
+  webglSupported: false,
+  wasmSupported: false,
+  worldDate: { year: 2097, month: 3, day: 14 },
+  logs: [],
+  settings: {},
+};
+
+// ============================================================
+//  WORLD CONFIG (static fictional + calculated)
+// ============================================================
+const WorldConfig = {
+  civilizationStatus: 'RECONSTRUCTION',
+  population: 12847,
+  archiveIntegrity: 94.7,
+  energyAvailable: 62.3,
+  waterAvailable: 71.8,
+  foodAvailable: 58.1,
+  infrastructureCondition: 47.2,
+  globalTempAnomaly: 2.4,
+  atmosphericCO2: 448,
+  activeMissions: 4,
+  discoveries: [
+    { id: 'd1', title: 'Geothermal Pocket — Sector 7', date: '2097.03.11', type: 'Energy' },
+    { id: 'd2', title: 'Pre-Collapse Data Fragment Recovered', date: '2097.03.09', type: 'Knowledge' },
+    { id: 'd3', title: 'Viable Seed Vault Located', date: '2097.03.05', type: 'Agriculture' },
+  ],
+};
+
+// ============================================================
+//  DATABASE MANAGER (IndexedDB)
+// ============================================================
+const DB = {
+  name: 'AfterZeroDB',
+  version: 1,
+  db: null,
+
+  async init() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(this.name, this.version);
+      req.onerror = () => reject(req.error);
+      req.onsuccess = () => {
+        this.db = req.result;
+        AppState.dbReady = true;
+        resolve(this.db);
+      };
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        const stores = [
+          { name: 'articles', key: 'id', indexes: ['domain', 'category', 'title'] },
+          { name: 'bookmarks', key: 'id' },
+          { name: 'collections', key: 'id' },
+          { name: 'missions', key: 'id' },
+          { name: 'settlements', key: 'id' },
+          { name: 'simStates', key: 'id' },
+          { name: 'settings', key: 'key' },
+          { name: 'logs', key: 'id' },
+          { name: 'customRecords', key: 'id' },
+          { name: 'searchIndex', key: 'id' },
+        ];
+        stores.forEach(s => {
+          if (!db.objectStoreNames.contains(s.name)) {
+            const store = db.createObjectStore(s.name, { keyPath: s.key });
+            if (s.indexes) s.indexes.forEach(idx => store.createIndex(idx, idx, { unique: false }));
+          }
+        });
+      };
+    });
+  },
+
+  async put(store, data) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(store, 'readwrite');
+      tx.objectStore(store).put(data);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  },
+
+  async get(store, key) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(store, 'readonly');
+      const req = tx.objectStore(store).get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  },
+
+  async getAll(store) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(store, 'readonly');
+      const req = tx.objectStore(store).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  },
+
+  async delete(store, key) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(store, 'readwrite');
+      tx.objectStore(store).delete(key);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  },
+
+  async clear(store) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(store, 'readwrite');
+      tx.objectStore(store).clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  },
+
+  async count(store) {
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(store, 'readonly');
+      const req = tx.objectStore(store).count();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+};
+
+// ============================================================
+//  KNOWLEDGE ENGINE — Initial substantive articles
+// ============================================================
+const KnowledgeData = [
+  // PHYSICS
+  {
+    id: 'phys-001',
+    title: 'Newton\'s Laws of Motion',
+    domain: 'Physics',
+    category: 'Classical Mechanics',
+    summary: 'The three fundamental laws describing the relationship between the motion of an object and the forces acting on it.',
+    content: `<p>Newton's three laws of motion form the foundation of classical mechanics. Published in 1687 in the <em>Philosophiæ Naturalis Principia Mathematica</em>, they describe how objects move under the influence of forces.</p>
+    <h2>First Law — Inertia</h2>
+    <p>An object at rest remains at rest, and an object in motion continues in uniform motion in a straight line, unless acted upon by a net external force.</p>
+    <div class="equation">ΣF = 0 ⟹ a = 0</div>
+    <h2>Second Law — Force and Acceleration</h2>
+    <p>The acceleration of an object is directly proportional to the net force acting on it and inversely proportional to its mass.</p>
+    <div class="equation">F = ma</div>
+    <p>Where F is the net force (newtons), m is mass (kg), and a is acceleration (m/s²).</p>
+    <h2>Third Law — Action and Reaction</h2>
+    <p>For every action, there is an equal and opposite reaction. Forces always occur in pairs.</p>
+    <div class="equation">F<sub>AB</sub> = −F<sub>BA</sub></div>
+    <h2>Practical Applications</h2>
+    <ul>
+      <li>Structural engineering: calculating loads and stresses</li>
+      <li>Vehicle dynamics and braking systems</li>
+      <li>Spacecraft trajectory planning</li>
+      <li>Ballistics and projectile motion</li>
+    </ul>
+    <h2>Key Concepts</h2>
+    <ul>
+      <li><strong>Inertia:</strong> Resistance to change in motion</li>
+      <li><strong>Momentum:</strong> p = mv</li>
+      <li><strong>Impulse:</strong> J = FΔt = Δp</li>
+    </ul>`,
+    keyConcepts: ['Inertia', 'Force', 'Acceleration', 'Momentum', 'Action-Reaction'],
+    equations: ['F = ma', 'p = mv', 'J = Δp'],
+    applications: ['Engineering mechanics', 'Vehicle design', 'Aerospace'],
+    related: ['phys-002', 'phys-003'],
+    references: ['Newton, I. (1687). Principia Mathematica', 'Standard physics textbooks (Halliday/Resnick)'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Science'
+  },
+  {
+    id: 'phys-002',
+    title: 'Laws of Thermodynamics',
+    domain: 'Physics',
+    category: 'Thermodynamics',
+    summary: 'Four fundamental laws governing energy, heat, work, and entropy in physical systems.',
+    content: `<p>Thermodynamics describes the relationships between heat, work, temperature, and energy. The four laws form the basis for understanding engines, refrigeration, power plants, and natural processes.</p>
+    <h2>Zeroth Law</h2>
+    <p>If two systems are each in thermal equilibrium with a third, they are in thermal equilibrium with each other. This defines temperature.</p>
+    <h2>First Law — Conservation of Energy</h2>
+    <div class="equation">ΔU = Q − W</div>
+    <p>The change in internal energy of a system equals heat added minus work done by the system. Energy cannot be created or destroyed.</p>
+    <h2>Second Law — Entropy</h2>
+    <p>The entropy of an isolated system always increases or remains constant. Heat cannot spontaneously flow from cold to hot. No heat engine can be 100% efficient.</p>
+    <div class="equation">ΔS ≥ 0 (isolated system)</div>
+    <div class="equation">η = 1 − T<sub>C</sub>/T<sub>H</sub> (Carnot efficiency)</div>
+    <h2>Third Law</h2>
+    <p>As temperature approaches absolute zero, the entropy of a perfect crystal approaches a minimum (often taken as zero).</p>
+    <h2>Applications in Reconstruction</h2>
+    <ul>
+      <li>Heat engine design for power generation</li>
+      <li>Insulation and heat recovery systems</li>
+      <li>Refrigeration and food preservation</li>
+      <li>Understanding limits of energy conversion efficiency</li>
+    </ul>`,
+    keyConcepts: ['Internal Energy', 'Entropy', 'Heat Engine', 'Carnot Cycle', 'Thermal Equilibrium'],
+    equations: ['ΔU = Q − W', 'η = 1 − TC/TH', 'ΔS ≥ 0'],
+    applications: ['Power plants', 'HVAC', 'Engines', 'Cryogenics'],
+    related: ['phys-001', 'eng-energy-001'],
+    references: ['Standard thermodynamics textbooks', 'Fermi, E. Thermodynamics'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Science'
+  },
+  {
+    id: 'phys-003',
+    title: 'Electromagnetic Fundamentals',
+    domain: 'Physics',
+    category: 'Electromagnetism',
+    summary: 'Maxwell\'s equations and the basic principles of electric and magnetic fields.',
+    content: `<p>Electromagnetism unifies electricity and magnetism. James Clerk Maxwell's equations (1860s) describe how electric and magnetic fields are generated and altered by charges and currents.</p>
+    <h2>Coulomb's Law</h2>
+    <div class="equation">F = k · (q₁q₂)/r²</div>
+    <p>k ≈ 8.99 × 10⁹ N·m²/C²</p>
+    <h2>Ohm's Law</h2>
+    <div class="equation">V = IR</div>
+    <h2>Power in Electrical Circuits</h2>
+    <div class="equation">P = VI = I²R = V²/R</div>
+    <h2>Faraday's Law of Induction</h2>
+    <div class="equation">ε = −dΦ<sub>B</sub>/dt</div>
+    <p>A changing magnetic flux induces an electromotive force. This is the principle behind generators and transformers.</p>
+    <h2>Practical Importance</h2>
+    <ul>
+      <li>Electric power generation and transmission</li>
+      <li>Motors and generators</li>
+      <li>Wireless communication</li>
+      <li>Sensors and instrumentation</li>
+    </ul>`,
+    keyConcepts: ['Electric Field', 'Magnetic Field', 'Induction', 'Current', 'Voltage', 'Resistance'],
+    equations: ['V = IR', 'P = VI', 'ε = −dΦB/dt', 'F = kq1q2/r²'],
+    applications: ['Power systems', 'Electronics', 'Motors', 'Communications'],
+    related: ['eng-elec-001', 'phys-001'],
+    references: ['Maxwell, J.C. A Treatise on Electricity and Magnetism', 'Griffiths, D.J. Introduction to Electrodynamics'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Science'
+  },
+  // MATHEMATICS
+  {
+    id: 'math-001',
+    title: 'Linear Algebra Essentials',
+    domain: 'Mathematics',
+    category: 'Linear Algebra',
+    summary: 'Vectors, matrices, systems of linear equations, and their applications in science and engineering.',
+    content: `<p>Linear algebra is the study of vectors, vector spaces, linear transformations, and systems of linear equations. It is indispensable in physics, computer graphics, machine learning, and engineering.</p>
+    <h2>Vectors</h2>
+    <p>A vector has magnitude and direction. In Rⁿ a vector is an ordered n-tuple.</p>
+    <div class="equation">v = (v₁, v₂, ..., vₙ)</div>
+    <h2>Matrix Multiplication</h2>
+    <p>If A is m×n and B is n×p, then C = AB is m×p with</p>
+    <div class="equation">c<sub>ij</sub> = Σ<sub>k</sub> a<sub>ik</sub>b<sub>kj</sub></div>
+    <h2>Systems of Linear Equations</h2>
+    <div class="equation">Ax = b</div>
+    <p>Solved by Gaussian elimination, matrix inversion (when A is invertible), or iterative methods.</p>
+    <h2>Determinant and Inverse</h2>
+    <p>A square matrix is invertible if and only if its determinant is nonzero.</p>
+    <div class="equation">A⁻¹A = I</div>
+    <h2>Applications</h2>
+    <ul>
+      <li>3D transformations in computer graphics (rotation, scaling, translation matrices)</li>
+      <li>Solving circuit networks (Kirchhoff's laws)</li>
+      <li>Finite element analysis in structural engineering</li>
+      <li>Principal component analysis and data reduction</li>
+    </ul>`,
+    keyConcepts: ['Vector', 'Matrix', 'Determinant', 'Eigenvalue', 'Linear Transformation'],
+    equations: ['Ax = b', 'c_ij = Σ a_ik b_kj'],
+    applications: ['Computer graphics', 'Engineering analysis', 'Data science'],
+    related: ['math-002', 'cs-001'],
+    references: ['Strang, G. Introduction to Linear Algebra', 'Standard university curricula'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Mathematics'
+  },
+  {
+    id: 'math-002',
+    title: 'Calculus Fundamentals',
+    domain: 'Mathematics',
+    category: 'Calculus',
+    summary: 'Differentiation, integration, and the fundamental theorem of calculus.',
+    content: `<p>Calculus is the mathematics of continuous change. Differential calculus studies rates of change; integral calculus studies accumulation.</p>
+    <h2>Derivative</h2>
+    <div class="equation">f'(x) = lim<sub>h→0</sub> [f(x+h) − f(x)] / h</div>
+    <p>Common rules: power rule (d/dx xⁿ = nxⁿ⁻¹), product rule, quotient rule, chain rule.</p>
+    <h2>Integral</h2>
+    <div class="equation">∫ f(x) dx = F(x) + C  where F' = f</div>
+    <h2>Fundamental Theorem of Calculus</h2>
+    <div class="equation">∫<sub>a</sub><sup>b</sup> f(x) dx = F(b) − F(a)</div>
+    <h2>Applications in Reconstruction</h2>
+    <ul>
+      <li>Optimization of resource allocation</li>
+      <li>Modeling population growth and resource consumption</li>
+      <li>Calculating work, energy, and fluid flow</li>
+      <li>Control systems and feedback design</li>
+    </ul>`,
+    keyConcepts: ['Derivative', 'Integral', 'Limit', 'Rate of Change', 'Accumulation'],
+    equations: ['f\'(x) = lim [f(x+h)-f(x)]/h', '∫_a^b f = F(b)-F(a)'],
+    applications: ['Physics modeling', 'Optimization', 'Engineering design'],
+    related: ['math-001', 'phys-001'],
+    references: ['Stewart, J. Calculus', 'Standard calculus textbooks'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Mathematics'
+  },
+  // CHEMISTRY
+  {
+    id: 'chem-001',
+    title: 'Atomic Structure and the Periodic Table',
+    domain: 'Chemistry',
+    category: 'Atomic Structure',
+    summary: 'Structure of the atom, electron configuration, and organization of the periodic table.',
+    content: `<p>All matter is composed of atoms. Understanding atomic structure is essential for chemistry, materials science, and nuclear technology.</p>
+    <h2>Subatomic Particles</h2>
+    <ul>
+      <li><strong>Proton:</strong> +1 charge, mass ≈ 1 u, in nucleus</li>
+      <li><strong>Neutron:</strong> 0 charge, mass ≈ 1 u, in nucleus</li>
+      <li><strong>Electron:</strong> −1 charge, mass ≈ 1/1836 u, orbitals</li>
+    </ul>
+    <h2>Atomic Number and Mass Number</h2>
+    <div class="equation">Z = number of protons (defines element)</div>
+    <div class="equation">A = protons + neutrons</div>
+    <h2>Electron Configuration</h2>
+    <p>Electrons occupy orbitals following the Aufbau principle, Pauli exclusion principle, and Hund's rule. The periodic table is organized by electron configuration.</p>
+    <h2>Periodic Trends</h2>
+    <ul>
+      <li>Atomic radius decreases across a period, increases down a group</li>
+      <li>Ionization energy increases across a period</li>
+      <li>Electronegativity increases toward fluorine</li>
+    </ul>
+    <h2>Practical Relevance</h2>
+    <ul>
+      <li>Understanding chemical reactivity for materials synthesis</li>
+      <li>Alloy design and metallurgy</li>
+      <li>Semiconductor doping</li>
+      <li>Nuclear decay and radioisotope applications</li>
+    </ul>`,
+    keyConcepts: ['Proton', 'Neutron', 'Electron', 'Orbital', 'Periodic Trend', 'Isotope'],
+    equations: ['Z = protons', 'A = protons + neutrons'],
+    applications: ['Materials science', 'Metallurgy', 'Semiconductors'],
+    related: ['chem-002', 'eng-mat-001'],
+    references: ['IUPAC periodic table', 'Standard general chemistry texts'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Science'
+  },
+  {
+    id: 'chem-002',
+    title: 'Chemical Bonding and Reactions',
+    domain: 'Chemistry',
+    category: 'Chemical Bonding',
+    summary: 'Ionic, covalent, and metallic bonds; stoichiometry and reaction types.',
+    content: `<p>Chemical bonds hold atoms together. The type of bond determines material properties.</p>
+    <h2>Bond Types</h2>
+    <ul>
+      <li><strong>Ionic:</strong> Electron transfer (e.g., NaCl). High melting point, conductive when molten.</li>
+      <li><strong>Covalent:</strong> Electron sharing (e.g., H₂O, diamond). Directional, can form networks.</li>
+      <li><strong>Metallic:</strong> Delocalized electrons. Conductive, malleable.</li>
+    </ul>
+    <h2>Stoichiometry</h2>
+    <div class="equation">aA + bB → cC + dD</div>
+    <p>Mass is conserved. Mole ratios from balanced equations allow quantitative predictions.</p>
+    <h2>Reaction Types</h2>
+    <ul>
+      <li>Synthesis / combination</li>
+      <li>Decomposition</li>
+      <li>Single and double displacement</li>
+      <li>Combustion</li>
+      <li>Redox (oxidation-reduction)</li>
+      <li>Acid-base neutralization</li>
+    </ul>
+    <h2>Reconstruction Applications</h2>
+    <ul>
+      <li>Water treatment chemistry (coagulation, disinfection)</li>
+      <li>Battery electrochemistry</li>
+      <li>Cement and concrete chemistry</li>
+      <li>Fuel combustion and energy release</li>
+    </ul>`,
+    keyConcepts: ['Ionic Bond', 'Covalent Bond', 'Stoichiometry', 'Redox', 'Mole'],
+    equations: ['aA + bB → cC + dD'],
+    applications: ['Water treatment', 'Batteries', 'Construction materials'],
+    related: ['chem-001', 'eng-env-001'],
+    references: ['Standard general chemistry textbooks'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Science'
+  },
+  // BIOLOGY
+  {
+    id: 'bio-001',
+    title: 'Cell Biology Fundamentals',
+    domain: 'Biology',
+    category: 'Cell Biology',
+    summary: 'Structure and function of prokaryotic and eukaryotic cells; organelles and membranes.',
+    content: `<p>The cell is the basic unit of life. Understanding cell structure is essential for medicine, agriculture, and biotechnology.</p>
+    <h2>Prokaryotes vs Eukaryotes</h2>
+    <ul>
+      <li><strong>Prokaryotes</strong> (bacteria, archaea): no nucleus, circular DNA, smaller</li>
+      <li><strong>Eukaryotes</strong> (plants, animals, fungi, protists): nucleus, organelles, linear chromosomes</li>
+    </ul>
+    <h2>Key Organelles</h2>
+    <ul>
+      <li><strong>Nucleus:</strong> Genetic material storage</li>
+      <li><strong>Mitochondria:</strong> ATP production (cellular respiration)</li>
+      <li><strong>Chloroplasts:</strong> Photosynthesis (plants)</li>
+      <li><strong>Ribosomes:</strong> Protein synthesis</li>
+      <li><strong>Endoplasmic reticulum / Golgi:</strong> Protein processing and transport</li>
+      <li><strong>Cell membrane:</strong> Selective barrier (phospholipid bilayer)</li>
+    </ul>
+    <h2>Cellular Respiration</h2>
+    <div class="equation">C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP</div>
+    <h2>Photosynthesis</h2>
+    <div class="equation">6CO₂ + 6H₂O + light → C₆H₁₂O₆ + 6O₂</div>
+    <h2>Relevance to Survival</h2>
+    <ul>
+      <li>Understanding pathogens and infection control</li>
+      <li>Crop improvement and plant physiology</li>
+      <li>Fermentation and food preservation</li>
+      <li>Biotechnology for medicine and materials</li>
+    </ul>`,
+    keyConcepts: ['Cell', 'Organelle', 'Membrane', 'ATP', 'Photosynthesis', 'Respiration'],
+    equations: ['C6H12O6 + 6O2 → 6CO2 + 6H2O + ATP'],
+    applications: ['Medicine', 'Agriculture', 'Biotechnology', 'Food science'],
+    related: ['bio-002', 'agri-001'],
+    references: ['Alberts et al. Molecular Biology of the Cell', 'Standard biology textbooks'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Science'
+  },
+  {
+    id: 'bio-002',
+    title: 'Genetics and Heredity',
+    domain: 'Biology',
+    category: 'Genetics',
+    summary: 'DNA structure, gene expression, Mendelian inheritance, and basic genetic engineering concepts.',
+    content: `<p>Genetics is the study of heredity and variation. DNA carries the instructions for building and maintaining organisms.</p>
+    <h2>DNA Structure</h2>
+    <p>Double helix of nucleotide pairs: Adenine–Thymine, Guanine–Cytosine. Discovered by Watson, Crick, Franklin, Wilkins (1953).</p>
+    <h2>Central Dogma</h2>
+    <div class="equation">DNA → RNA → Protein</div>
+    <p>Transcription (DNA to mRNA) and translation (mRNA to protein at ribosomes).</p>
+    <h2>Mendelian Inheritance</h2>
+    <ul>
+      <li>Genes exist in alleles (dominant/recessive)</li>
+      <li>Segregation: alleles separate during gamete formation</li>
+      <li>Independent assortment (for unlinked genes)</li>
+    </ul>
+    <h2>Practical Notes for Reconstruction</h2>
+    <ul>
+      <li>Seed saving and selective breeding for agriculture</li>
+      <li>Understanding inherited diseases</li>
+      <li>Basic principles behind modern genetic tools (for advanced archives)</li>
+    </ul>
+    <p><em>Note: Genetic engineering requires specialized laboratory infrastructure and expertise. This article covers foundational concepts only.</em></p>`,
+    keyConcepts: ['DNA', 'Gene', 'Allele', 'Transcription', 'Translation', 'Inheritance'],
+    equations: ['DNA → RNA → Protein'],
+    applications: ['Agriculture', 'Medicine', 'Breeding programs'],
+    related: ['bio-001', 'agri-001'],
+    references: ['Watson & Crick (1953)', 'Standard genetics textbooks'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Science'
+  },
+  // COMPUTER SCIENCE
+  {
+    id: 'cs-001',
+    title: 'Algorithms and Data Structures',
+    domain: 'Computer Science',
+    category: 'Algorithms',
+    summary: 'Fundamental algorithms, complexity analysis, and essential data structures.',
+    content: `<p>Algorithms are step-by-step procedures for computation. Data structures organize data for efficient access and modification.</p>
+    <h2>Complexity (Big-O)</h2>
+    <ul>
+      <li>O(1) — constant</li>
+      <li>O(log n) — logarithmic (binary search)</li>
+      <li>O(n) — linear</li>
+      <li>O(n log n) — efficient sorting (merge sort, heap sort)</li>
+      <li>O(n²) — nested loops (bubble sort)</li>
+    </ul>
+    <h2>Essential Data Structures</h2>
+    <ul>
+      <li><strong>Array / List:</strong> Contiguous storage, O(1) access</li>
+      <li><strong>Linked List:</strong> Dynamic size, O(n) access</li>
+      <li><strong>Stack:</strong> LIFO (push/pop)</li>
+      <li><strong>Queue:</strong> FIFO</li>
+      <li><strong>Hash Table:</strong> Average O(1) lookup</li>
+      <li><strong>Tree / BST / Heap:</strong> Hierarchical, efficient search/priority</li>
+      <li><strong>Graph:</strong> Nodes and edges (networks, maps)</li>
+    </ul>
+    <h2>Classic Algorithms</h2>
+    <ul>
+      <li>Sorting: quicksort, mergesort, heapsort</li>
+      <li>Searching: binary search, BFS, DFS</li>
+      <li>Shortest path: Dijkstra, A*</li>
+      <li>Dynamic programming for optimization</li>
+    </ul>
+    <h2>Relevance</h2>
+    <p>Efficient algorithms are critical for resource-constrained computing environments, simulation engines, and data management systems like this archive.</p>`,
+    keyConcepts: ['Big-O', 'Array', 'Hash Table', 'Tree', 'Graph', 'Sorting', 'Searching'],
+    equations: [],
+    applications: ['Software engineering', 'Databases', 'Simulations', 'Networking'],
+    related: ['cs-002', 'math-001'],
+    references: ['CLRS — Introduction to Algorithms', 'Standard CS curricula'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Computing'
+  },
+  {
+    id: 'cs-002',
+    title: 'Computer Architecture Basics',
+    domain: 'Computer Science',
+    category: 'Computer Architecture',
+    summary: 'CPU, memory hierarchy, instruction execution, and the von Neumann model.',
+    content: `<p>Computer architecture defines how hardware components are organized and how they execute instructions.</p>
+    <h2>Von Neumann Architecture</h2>
+    <ul>
+      <li>Central Processing Unit (CPU)</li>
+      <li>Memory (stores both data and instructions)</li>
+      <li>Input/Output</li>
+      <li>Bus system connecting components</li>
+    </ul>
+    <h2>CPU Components</h2>
+    <ul>
+      <li><strong>ALU:</strong> Arithmetic and logic operations</li>
+      <li><strong>Control Unit:</strong> Fetches and decodes instructions</li>
+      <li><strong>Registers:</strong> Fast temporary storage</li>
+      <li><strong>Cache:</strong> Fast memory close to CPU</li>
+    </ul>
+    <h2>Memory Hierarchy</h2>
+    <div class="equation">Registers → L1/L2/L3 Cache → RAM → Storage</div>
+    <p>Faster memory is smaller and more expensive. Hierarchy exploits locality of reference.</p>
+    <h2>Instruction Cycle</h2>
+    <p>Fetch → Decode → Execute → Write-back (repeat)</p>
+    <h2>Relevance to Reconstruction</h2>
+    <ul>
+      <li>Understanding resource limits of available computing hardware</li>
+      <li>Designing efficient software for constrained devices</li>
+      <li>Maintaining and repairing computing systems</li>
+    </ul>`,
+    keyConcepts: ['CPU', 'ALU', 'Cache', 'RAM', 'Instruction Cycle', 'Von Neumann'],
+    equations: [],
+    applications: ['Hardware maintenance', 'Embedded systems', 'Performance optimization'],
+    related: ['cs-001', 'eng-comp-001'],
+    references: ['Hennessy & Patterson, Computer Architecture', 'Standard CS textbooks'],
+    lastUpdated: '2097-01-15',
+    classification: 'Foundational Computing'
+  },
+  // ENGINEERING — Electrical
+  {
+    id: 'eng-elec-001',
+    title: 'Basic Electrical Circuits',
+    domain: 'Engineering',
+    category: 'Electrical Engineering',
+    summary: 'Ohm\'s law, series/parallel circuits, Kirchhoff\'s laws, and power calculations.',
+    content: `<p>Circuit analysis is the foundation of all electrical engineering work, from power distribution to electronics.</p>
+    <h2>Ohm's Law</h2>
+    <div class="equation">V = IR</div>
+    <h2>Series Circuits</h2>
+    <div class="equation">R_total = R₁ + R₂ + ... + Rₙ</div>
+    <div class="equation">I same through all; V divides</div>
+    <h2>Parallel Circuits</h2>
+    <div class="equation">1/R_total = 1/R₁ + 1/R₂ + ...</div>
+    <div class="equation">V same across all; I divides</div>
+    <h2>Kirchhoff's Laws</h2>
+    <ul>
+      <li><strong>KCL:</strong> Sum of currents into a node = 0</li>
+      <li><strong>KVL:</strong> Sum of voltages around a loop = 0</li>
+    </ul>
+    <h2>Power</h2>
+    <div class="equation">P = VI = I²R = V²/R</div>
+    <h2>Practical Guidance</h2>
+    <ul>
+      <li>Always verify voltage and current ratings of components</li>
+      <li>Use appropriate wire gauges for expected current</li>
+      <li>Include overcurrent protection (fuses/breakers)</li>
+      <li>Isolate high-voltage work; follow lockout/tagout principles</li>
+    </ul>
+    <p><em>Safety note: Electrical work can be lethal. This is educational material, not a substitute for trained electrical practice.</em></p>`,
+    keyConcepts: ['Ohm\'s Law', 'Series', 'Parallel', 'Kirchhoff', 'Power', 'Resistance'],
+    equations: ['V=IR', 'P=VI', 'R_series=ΣR', '1/R_parallel=Σ(1/R)'],
+    applications: ['Wiring', 'Power distribution', 'Electronics', 'Troubleshooting'],
+    related: ['phys-003', 'eng-energy-001'],
+    references: ['Standard electrical engineering textbooks', 'National electrical codes (general principles)'],
+    lastUpdated: '2097-01-15',
+    classification: 'Engineering Practice'
+  },
+  {
+    id: 'eng-energy-001',
+    title: 'Solar Energy Systems',
+    domain: 'Energy Systems',
+    category: 'Solar Energy',
+    summary: 'Photovoltaic principles, system sizing, efficiency factors, and practical deployment.',
+    content: `<p>Solar photovoltaics convert sunlight directly into electricity. They are a primary candidate for decentralized post-collapse power generation.</p>
+    <h2>Photovoltaic Effect</h2>
+    <p>Photons excite electrons in a semiconductor (typically silicon), creating electron-hole pairs that are separated by an internal electric field, producing current.</p>
+    <h2>Key Metrics</h2>
+    <ul>
+      <li><strong>Irradiance:</strong> Power per area (W/m²). Standard Test Condition (STC): 1000 W/m²</li>
+      <li><strong>Panel efficiency:</strong> Typically 15–22% for commercial silicon modules</li>
+      <li><strong>Capacity factor:</strong> Actual energy / theoretical maximum (depends on location, weather, orientation)</li>
+    </ul>
+    <h2>Simple Sizing Estimate</h2>
+    <div class="equation">Daily energy need (Wh) / (Peak sun hours × System efficiency) = Required array power (W)</div>
+    <p>Example: 2000 Wh/day need, 4 peak sun hours, 0.75 system efficiency → 2000/(4×0.75) ≈ 667 W array.</p>
+    <h2>System Components</h2>
+    <ul>
+      <li>PV modules</li>
+      <li>Charge controller (MPPT preferred)</li>
+      <li>Battery bank (if off-grid storage needed)</li>
+      <li>Inverter (if AC loads)</li>
+      <li>Mounting, wiring, protection</li>
+    </ul>
+    <h2>Limitations</h2>
+    <ul>
+      <li>Intermittent (day/night, weather)</li>
+      <li>Requires storage or backup for continuous supply</li>
+      <li>Degradation over decades (~0.5%/year typical)</li>
+      <li>Manufacturing requires advanced industry</li>
+    </ul>`,
+    keyConcepts: ['Photovoltaic', 'Irradiance', 'Efficiency', 'Peak Sun Hours', 'MPPT', 'Off-grid'],
+    equations: ['P_array ≈ E_daily / (PSH × η_system)'],
+    applications: ['Off-grid power', 'Water pumping', 'Communications', 'Lighting'],
+    related: ['eng-elec-001', 'eng-energy-002'],
+    references: ['NREL solar resource data principles', 'Standard PV system design guides'],
+    lastUpdated: '2097-01-15',
+    classification: 'Engineering Practice'
+  },
+  {
+    id: 'eng-energy-002',
+    title: 'Energy Storage — Batteries',
+    domain: 'Energy Systems',
+    category: 'Energy Storage',
+    summary: 'Battery types, capacity calculations, charging principles, and safety.',
+    content: `<p>Energy storage bridges intermittent generation and continuous demand. Batteries are the most common electrochemical storage technology.</p>
+    <h2>Capacity</h2>
+    <div class="equation">Capacity (Ah) = Current (A) × Time (h)</div>
+    <div class="equation">Energy (Wh) = Voltage (V) × Capacity (Ah)</div>
+    <h2>Depth of Discharge (DoD)</h2>
+    <p>Fraction of capacity used. Deeper DoD shortens cycle life for many chemistries. Design around recommended DoD.</p>
+    <h2>Common Chemistries</h2>
+    <ul>
+      <li><strong>Lead-acid:</strong> Mature, heavy, low cost, ~50% DoD recommended, shorter cycle life</li>
+      <li><strong>Li-ion (various):</strong> Higher energy density, longer life, more complex BMS required, fire risk if damaged</li>
+      <li><strong>NiMH / NiCd:</strong> Intermediate properties; NiCd has toxicity concerns</li>
+    </ul>
+    <h2>Sizing Example</h2>
+    <p>Need 1500 Wh usable at 12 V, 50% DoD lead-acid:</p>
+    <div class="equation">Required capacity = 1500 / (12 × 0.5) = 250 Ah</div>
+    <h2>Safety</h2>
+    <ul>
+      <li>Ventilation for lead-acid (hydrogen)</li>
+      <li>Battery Management System (BMS) for Li-ion</li>
+      <li>Correct charging profiles</li>
+      <li>Protection against short circuits and overcurrent</li>
+    </ul>`,
+    keyConcepts: ['Capacity', 'DoD', 'Cycle Life', 'BMS', 'Energy Density', 'C-rate'],
+    equations: ['Wh = V × Ah', 'Required Ah = Wh_usable / (V × DoD)'],
+    applications: ['Off-grid systems', 'UPS', 'Electric vehicles', 'Portable power'],
+    related: ['eng-energy-001', 'eng-elec-001'],
+    references: ['Battery manufacturer datasheets', 'Standard energy storage references'],
+    lastUpdated: '2097-01-15',
+    classification: 'Engineering Practice'
+  },
+  // WATER & ENVIRONMENT
+  {
+    id: 'eng-env-001',
+    title: 'Water Purification Principles',
+    domain: 'Engineering',
+    category: 'Environmental Engineering',
+    summary: 'Physical, chemical, and biological methods for making water safe for consumption and use.',
+    content: `<p>Safe water is essential for survival. Multiple barriers provide the most reliable treatment.</p>
+    <h2>Contaminant Categories</h2>
+    <ul>
+      <li>Pathogens (bacteria, viruses, protozoa)</li>
+      <li>Suspended solids / turbidity</li>
+      <li>Dissolved chemicals (heavy metals, nitrates, organics)</li>
+      <li>Salinity (in some regions)</li>
+    </ul>
+    <h2>Treatment Processes</h2>
+    <ul>
+      <li><strong>Sedimentation:</strong> Gravity settling of large particles</li>
+      <li><strong>Filtration:</strong> Sand, ceramic, membrane — removes particles and some pathogens</li>
+      <li><strong>Coagulation/Flocculation:</strong> Chemicals (alum, etc.) aggregate fine particles</li>
+      <li><strong>Disinfection:</strong> Chlorine, boiling, UV, ozone — kills pathogens</li>
+      <li><strong>Adsorption:</strong> Activated carbon for organics and taste/odor</li>
+      <li><strong>Distillation / Reverse Osmosis:</strong> For dissolved solids and high purity</li>
+    </ul>
+    <h2>Boiling</h2>
+    <p>Bringing water to a rolling boil is a reliable emergency pathogen kill method. At sea level, 1 minute is commonly recommended; longer at high altitude.</p>
+    <h2>Simple Multi-Barrier Approach</h2>
+    <ol>
+      <li>Source protection / settling</li>
+      <li>Filtration (cloth → sand → ceramic if available)</li>
+      <li>Disinfection (boil or chlorine residual)</li>
+      <li>Safe storage (covered, clean containers)</li>
+    </ol>
+    <p><em>This is educational guidance. Local conditions, contaminant profiles, and available materials must be assessed. When possible, test water quality.</em></p>`,
+    keyConcepts: ['Pathogen', 'Filtration', 'Disinfection', 'Turbidity', 'Multi-barrier', 'Chlorine residual'],
+    equations: [],
+    applications: ['Drinking water', 'Emergency response', 'Settlement water systems'],
+    related: ['chem-002', 'med-001'],
+    references: ['WHO Guidelines for Drinking-water Quality (principles)', 'CDC water treatment guidance principles'],
+    lastUpdated: '2097-01-15',
+    classification: 'Engineering Practice'
+  },
+  // AGRICULTURE
+  {
+    id: 'agri-001',
+    title: 'Soil Science and Crop Basics',
+    domain: 'Agriculture and Food',
+    category: 'Soil Science',
+    summary: 'Soil composition, fertility, water retention, and fundamental crop production principles.',
+    content: `<p>Soil is a living system. Understanding its physical and chemical properties is essential for sustainable food production.</p>
+    <h2>Soil Components</h2>
+    <ul>
+      <li>Mineral particles (sand, silt, clay)</li>
+      <li>Organic matter (humus)</li>
+      <li>Water</li>
+      <li>Air</li>
+      <li>Living organisms</li>
+    </ul>
+    <h2>Texture and Structure</h2>
+    <p>Texture (sand/silt/clay ratio) affects drainage and water holding. Structure (aggregation) affects root penetration and aeration. Loam is generally ideal for many crops.</p>
+    <h2>Nutrients</h2>
+    <ul>
+      <li><strong>Macronutrients:</strong> N, P, K, Ca, Mg, S</li>
+      <li><strong>Micronutrients:</strong> Fe, Mn, Zn, Cu, B, Mo, Cl</li>
+    </ul>
+    <p>Nitrogen is often limiting. Compost, manure, legumes (nitrogen fixation), and mineral fertilizers are sources.</p>
+    <h2>Water Management</h2>
+    <ul>
+      <li>Field capacity vs permanent wilting point</li>
+      <li>Mulching to reduce evaporation</li>
+      <li>Irrigation scheduling based on crop need and soil moisture</li>
+    </ul>
+    <h2>Crop Rotation and Diversity</h2>
+    <p>Rotating crops and including legumes improves soil health, reduces pest pressure, and balances nutrient demand.</p>`,
+    keyConcepts: ['Soil Texture', 'Organic Matter', 'NPK', 'Field Capacity', 'Crop Rotation', 'Nitrogen Fixation'],
+    equations: [],
+    applications: ['Food production', 'Settlement agriculture', 'Soil rehabilitation'],
+    related: ['bio-001', 'agri-002'],
+    references: ['Standard soil science and agronomy textbooks', 'FAO soil resources principles'],
+    lastUpdated: '2097-01-15',
+    classification: 'Applied Science'
+  },
+  {
+    id: 'agri-002',
+    title: 'Food Preservation Methods',
+    domain: 'Agriculture and Food',
+    category: 'Food Preservation',
+    summary: 'Traditional and technical methods to extend food shelf life without modern industrial infrastructure.',
+    content: `<p>Preserving food is critical when production is seasonal or supply chains are absent.</p>
+    <h2>Primary Methods</h2>
+    <ul>
+      <li><strong>Drying / Dehydration:</strong> Removes water needed by microbes. Sun drying, air drying, low-heat.</li>
+      <li><strong>Salting / Curing:</strong> Lowers water activity. Used for meat and fish.</li>
+      <li><strong>Fermentation:</strong> Beneficial microbes produce acid or alcohol that inhibit pathogens (sauerkraut, yogurt, pickles).</li>
+      <li><strong>Cooling / Root cellars:</strong> Slow microbial growth. Underground storage for root crops.</li>
+      <li><strong>Canning / Bottling:</strong> Heat sterilization + airtight seal. Requires proper technique to avoid botulism risk.</li>
+      <li><strong>Smoking:</strong> Drying + antimicrobial compounds from smoke.</li>
+    </ul>
+    <h2>Water Activity</h2>
+    <p>Microbial growth generally requires water activity (a<sub>w</sub>) above ~0.6–0.9 depending on organism. Drying and salting reduce a<sub>w</sub>.</p>
+    <h2>Safety Notes</h2>
+    <ul>
+      <li>Low-acid canned foods require pressure canning temperatures to destroy <em>C. botulinum</em> spores</li>
+      <li>When in doubt about safety of preserved food, discard</li>
+      <li>Clean equipment and good hygiene reduce contamination risk</li>
+    </ul>`,
+    keyConcepts: ['Water Activity', 'Fermentation', 'Dehydration', 'Canning', 'Curing'],
+    equations: [],
+    applications: ['Food security', 'Seasonal storage', 'Emergency preparedness'],
+    related: ['agri-001', 'chem-002', 'med-001'],
+    references: ['Standard food science and preservation guides', 'USDA canning principles (educational)'],
+    lastUpdated: '2097-01-15',
+    classification: 'Applied Science'
+  },
+  // MEDICINE
+  {
+    id: 'med-001',
+    title: 'First Aid Fundamentals',
+    domain: 'Medicine and Public Health',
+    category: 'First Aid',
+    summary: 'Basic emergency response principles for injury and sudden illness. Educational only — not a substitute for trained medical care.',
+    content: `<p><strong>Disclaimer:</strong> This is educational material for general knowledge. It is not professional medical advice. Seek trained medical help whenever available. Incorrect application of first aid can cause harm.</p>
+    <h2>Primary Survey (DRABC approach — simplified)</h2>
+    <ol>
+      <li><strong>Danger:</strong> Ensure scene safety for yourself and the casualty</li>
+      <li><strong>Response:</strong> Check if the person responds</li>
+      <li><strong>Airway:</strong> Open airway if needed</li>
+      <li><strong>Breathing:</strong> Look, listen, feel</li>
+      <li><strong>Circulation / CPR:</strong> If not breathing normally, begin CPR if trained</li>
+    </ol>
+    <h2>Bleeding Control</h2>
+    <ul>
+      <li>Direct pressure with clean cloth</li>
+      <li>Elevation if practical and no fracture suspected</li>
+      <li>Tourniquet only for life-threatening limb hemorrhage when direct pressure fails (note time of application)</li>
+    </ul>
+    <h2>Burns</h2>
+    <ul>
+      <li>Cool with running water (not ice) for at least 10–20 minutes</li>
+      <li>Cover with clean non-adhesive dressing</li>
+      <li>Do not apply creams, butter, or break blisters</li>
+    </ul>
+    <h2>Fractures (suspected)</h2>
+    <ul>
+      <li>Immobilize in the position found if possible</li>
+      <li>Do not attempt to realign</li>
+      <li>Monitor circulation beyond the injury</li>
+    </ul>
+    <h2>Infection Prevention</h2>
+    <ul>
+      <li>Clean wounds with clean water</li>
+      <li>Hand hygiene</li>
+      <li>Sterile or clean dressings when available</li>
+    </ul>`,
+    keyConcepts: ['Scene Safety', 'Airway', 'Bleeding Control', 'CPR', 'Burn Care', 'Immobilization'],
+    equations: [],
+    applications: ['Emergency response', 'Settlement medical readiness'],
+    related: ['med-002', 'eng-env-001'],
+    references: ['Standard first aid manuals (Red Cross / equivalent principles)', 'WHO emergency care principles'],
+    lastUpdated: '2097-01-15',
+    classification: 'Public Health Education'
+  },
+  {
+    id: 'med-002',
+    title: 'Public Health and Sanitation',
+    domain: 'Medicine and Public Health',
+    category: 'Public Health',
+    summary: 'Principles of sanitation, disease prevention, and community health in resource-limited settings.',
+    content: `<p>Public health measures often save more lives than individual clinical care, especially when medical infrastructure is limited.</p>
+    <h2>Core Pillars</h2>
+    <ul>
+      <li>Safe water</li>
+      <li>Excreta disposal / sanitation</li>
+      <li>Hygiene (handwashing, food safety)</li>
+      <li>Vector control</li>
+      <li>Vaccination (when available)</li>
+      <li>Nutrition</li>
+      <li>Shelter and crowding management</li>
+    </ul>
+    <h2>Fecal-Oral Disease Transmission</h2>
+    <p>Many infectious diseases spread via contaminated water, food, hands, and surfaces. Breaking the chain with sanitation and hygiene is highly effective.</p>
+    <h2>Latrine Principles</h2>
+    <ul>
+      <li>Separate human waste from water sources and living areas</li>
+      <li>Adequate distance from wells and streams (site-specific; downhill preferred)</li>
+      <li>Cover and maintain to reduce flies</li>
+      <li>Handwashing station nearby</li>
+    </ul>
+    <h2>Hand Hygiene</h2>
+    <p>Soap and water is preferred. When unavailable, ash or alcohol-based products (if available) can help. Critical times: after defecation, before food preparation and eating, after caring for the sick.</p>
+    <h2>Outbreak Awareness</h2>
+    <p>Unusual clusters of similar illness should trigger investigation of water, food, and hygiene practices. Isolate the sick when appropriate and protect caregivers.</p>`,
+    keyConcepts: ['Sanitation', 'Hygiene', 'Fecal-Oral Route', 'Vector Control', 'Water Safety'],
+    equations: [],
+    applications: ['Settlement planning', 'Disease prevention', 'Emergency camps'],
+    related: ['med-001', 'eng-env-001'],
+    references: ['WHO WASH guidelines principles', 'Sphere Handbook public health principles'],
+    lastUpdated: '2097-01-15',
+    classification: 'Public Health Education'
+  },
+  // EARTH SCIENCE
+  {
+    id: 'earth-001',
+    title: 'Basic Meteorology and Weather',
+    domain: 'Earth and Space Sciences',
+    category: 'Meteorology',
+    summary: 'Atmosphere structure, pressure systems, clouds, precipitation, and practical weather observation.',
+    content: `<p>Understanding weather supports agriculture, energy planning (solar/wind), and safety.</p>
+    <h2>Atmosphere Layers</h2>
+    <ul>
+      <li>Troposphere (weather layer)</li>
+      <li>Stratosphere</li>
+      <li>Mesosphere</li>
+      <li>Thermosphere</li>
+    </ul>
+    <h2>Pressure and Wind</h2>
+    <p>Air moves from high to low pressure. Coriolis effect deflects winds (important at large scales). Local winds are driven by heating differences (sea breeze, mountain/valley).</p>
+    <h2>Clouds and Precipitation</h2>
+    <ul>
+      <li>Warm air holds more moisture</li>
+      <li>Cooling (lifting) causes condensation → clouds → precipitation</li>
+      <li>Types: cumulus, stratus, cirrus, nimbus (rain-bearing)</li>
+    </ul>
+    <h2>Practical Observation</h2>
+    <ul>
+      <li>Barometric pressure trends (falling often precedes stormy weather)</li>
+      <li>Wind direction and speed</li>
+      <li>Cloud type and coverage</li>
+      <li>Temperature and humidity</li>
+    </ul>
+    <h2>Relevance</h2>
+    <ul>
+      <li>Timing agricultural operations</li>
+      <li>Estimating solar resource variability</li>
+      <li>Wind energy assessment</li>
+      <li>Storm preparedness</li>
+    </ul>`,
+    keyConcepts: ['Pressure', 'Humidity', 'Cloud Types', 'Front', 'Wind', 'Precipitation'],
+    equations: [],
+    applications: ['Agriculture', 'Energy planning', 'Safety'],
+    related: ['earth-002', 'eng-energy-001'],
+    references: ['Standard meteorology textbooks', 'NOAA educational materials principles'],
+    lastUpdated: '2097-01-15',
+    classification: 'Earth Science'
+  },
+  {
+    id: 'earth-002',
+    title: 'Geology Basics for Resource Identification',
+    domain: 'Earth and Space Sciences',
+    category: 'Geology',
+    summary: 'Rock types, mineral resources, groundwater, and practical field identification principles.',
+    content: `<p>Geology informs resource location: water, building stone, ores, and geothermal potential.</p>
+    <h2>Rock Types</h2>
+    <ul>
+      <li><strong>Igneous:</strong> From cooled magma/lava (granite, basalt)</li>
+      <li><strong>Sedimentary:</strong> From deposited particles or chemical precipitation (sandstone, limestone, shale)</li>
+      <li><strong>Metamorphic:</strong> Transformed by heat/pressure (marble, slate, schist)</li>
+    </ul>
+    <h2>Groundwater</h2>
+    <p>Water infiltrates and fills pore spaces and fractures. Aquifers store and transmit groundwater. Springs occur where water table intersects surface. Wells must be sited and protected carefully to avoid contamination.</p>
+    <h2>Useful Materials</h2>
+    <ul>
+      <li>Clay for ceramics and sealing</li>
+      <li>Sand and gravel for construction</li>
+      <li>Limestone for lime and cement chemistry</li>
+      <li>Metal ores (identification requires more advanced knowledge)</li>
+    </ul>
+    <h2>Field Safety</h2>
+    <ul>
+      <li>Unstable slopes and mine openings are hazardous</li>
+      <li>Never enter abandoned underground workings without expertise and equipment</li>
+    </ul>`,
+    keyConcepts: ['Igneous', 'Sedimentary', 'Metamorphic', 'Aquifer', 'Mineral', 'Ore'],
+    equations: [],
+    applications: ['Water resources', 'Construction materials', 'Resource scouting'],
+    related: ['eng-env-001', 'eng-civil-001'],
+    references: ['Standard physical geology textbooks'],
+    lastUpdated: '2097-01-15',
+    classification: 'Earth Science'
+  },
+  // CIVIL ENGINEERING
+  {
+    id: 'eng-civil-001',
+    title: 'Shelter and Structural Basics',
+    domain: 'Engineering',
+    category: 'Civil Engineering',
+    summary: 'Load paths, material properties, and principles for simple safe shelter construction.',
+    content: `<p>Shelter protects from weather and provides security. Even simple structures must manage loads safely.</p>
+    <h2>Load Types</h2>
+    <ul>
+      <li><strong>Dead load:</strong> Weight of the structure itself</li>
+      <li><strong>Live load:</strong> Occupants, furniture, stored goods</li>
+      <li><strong>Environmental:</strong> Wind, snow, seismic</li>
+    </ul>
+    <h2>Load Path</h2>
+    <p>Loads must travel from the point of application down to the foundation and into the ground. Interruptions or weak links cause failure.</p>
+    <h2>Material Notes</h2>
+    <ul>
+      <li><strong>Wood:</strong> Strong in tension and compression along grain; protect from moisture and insects</li>
+      <li><strong>Masonry:</strong> Strong in compression; needs reinforcement or careful design for tension/lateral loads</li>
+      <li><strong>Concrete:</strong> Excellent compression; requires steel reinforcement for tension</li>
+      <li><strong>Steel:</strong> High strength; corrosion protection needed</li>
+    </ul>
+    <h2>Foundation Principles</h2>
+    <ul>
+      <li>Transfer loads to competent soil or rock</li>
+      <li>Stay above frost depth where applicable</li>
+      <li>Drainage away from foundation</li>
+      <li>Avoid building on uncontrolled fill or steep unstable slopes</li>
+    </ul>
+    <h2>Practical Priorities for Reconstruction</h2>
+    <ol>
+      <li>Dry, weather-tight envelope</li>
+      <li>Safe heating (ventilation, CO awareness)</li>
+      <li>Structural stability under expected loads</li>
+      <li>Expandable modular design</li>
+    </ol>
+    <p><em>Complex or multi-story structures require engineering analysis beyond this introduction.</em></p>`,
+    keyConcepts: ['Dead Load', 'Live Load', 'Load Path', 'Foundation', 'Compression', 'Tension'],
+    equations: [],
+    applications: ['Housing', 'Storage buildings', 'Community structures'],
+    related: ['eng-mat-001', 'earth-002'],
+    references: ['Standard structural engineering principles', 'Building codes (general concepts)'],
+    lastUpdated: '2097-01-15',
+    classification: 'Engineering Practice'
+  },
+  // MATERIALS
+  {
+    id: 'eng-mat-001',
+    title: 'Materials Science Overview',
+    domain: 'Engineering',
+    category: 'Materials Science',
+    summary: 'Classes of materials, key properties, and selection principles for engineering applications.',
+    content: `<p>Material selection balances strength, durability, availability, cost, and manufacturability.</p>
+    <h2>Material Classes</h2>
+    <ul>
+      <li><strong>Metals:</strong> Strong, ductile, conductive; can corrode</li>
+      <li><strong>Ceramics:</strong> Hard, high-temperature resistant, brittle</li>
+      <li><strong>Polymers:</strong> Lightweight, corrosion resistant, temperature limited</li>
+      <li><strong>Composites:</strong> Combine properties (e.g., fiber-reinforced)</li>
+      <li><strong>Semiconductors:</strong> Electronics</li>
+    </ul>
+    <h2>Key Mechanical Properties</h2>
+    <ul>
+      <li><strong>Strength:</strong> Stress at failure</li>
+      <li><strong>Stiffness (modulus):</strong> Resistance to elastic deformation</li>
+      <li><strong>Ductility:</strong> Ability to deform plastically</li>
+      <li><strong>Toughness:</strong> Energy absorbed before fracture</li>
+      <li><strong>Hardness:</strong> Resistance to indentation/wear</li>
+      <li><strong>Fatigue resistance:</strong> Behavior under cyclic loading</li>
+    </ul>
+    <h2>Stress and Strain</h2>
+    <div class="equation">σ = F / A  (stress)</div>
+    <div class="equation">ε = ΔL / L₀  (strain)</div>
+    <div class="equation">E = σ / ε  (Young's modulus, elastic region)</div>
+    <h2>Selection Heuristics</h2>
+    <ul>
+      <li>Match material to primary load and environment</li>
+      <li>Prefer locally available materials when performance is adequate</li>
+      <li>Design for maintainability and repair</li>
+      <li>Account for degradation (corrosion, UV, moisture, fatigue)</li>
+    </ul>`,
+    keyConcepts: ['Stress', 'Strain', 'Modulus', 'Strength', 'Ductility', 'Corrosion'],
+    equations: ['σ = F/A', 'ε = ΔL/L0', 'E = σ/ε'],
+    applications: ['Structural design', 'Tool making', 'Machine components'],
+    related: ['eng-civil-001', 'chem-001'],
+    references: ['Callister, Materials Science and Engineering', 'Standard materials textbooks'],
+    lastUpdated: '2097-01-15',
+    classification: 'Engineering Science'
+  },
+  // ARCHITECTURE / CIVILIZATION
+  {
+    id: 'civ-001',
+    title: 'Settlement Planning Principles',
+    domain: 'Architecture and Civilization',
+    category: 'Urban Planning',
+    summary: 'Site selection, zoning logic, infrastructure sequencing, and resilience for small settlements.',
+    content: `<p>A functional settlement balances resources, safety, health, and growth potential.</p>
+    <h2>Site Selection Factors</h2>
+    <ul>
+      <li>Water availability and quality</li>
+      <li>Arable land access</li>
+      <li>Defensible or low-risk topography (flood, landslide, extreme weather)</li>
+      <li>Building materials nearby</li>
+      <li>Energy resources (solar exposure, wind, micro-hydro, geothermal)</li>
+      <li>Existing infrastructure remnants (if safe to reuse)</li>
+    </ul>
+    <h2>Functional Zones</h2>
+    <ul>
+      <li>Residential</li>
+      <li>Food production</li>
+      <li>Water treatment and storage</li>
+      <li>Energy generation</li>
+      <li>Workshops / manufacturing</li>
+      <li>Medical / quarantine</li>
+      <li>Waste management</li>
+      <li>Communal / governance</li>
+    </ul>
+    <h2>Infrastructure Sequencing</h2>
+    <ol>
+      <li>Water and sanitation</li>
+      <li>Shelter</li>
+      <li>Food production capacity</li>
+      <li>Energy for critical loads</li>
+      <li>Workshops and tools</li>
+      <li>Education and knowledge preservation</li>
+      <li>Expanded industry</li>
+    </ol>
+    <h2>Resilience</h2>
+    <ul>
+      <li>Redundancy in critical systems</li>
+      <li>Distributed rather than single-point failures</li>
+      <li>Local skill development</li>
+      <li>Record keeping and knowledge transfer</li>
+    </ul>`,
+    keyConcepts: ['Site Selection', 'Zoning', 'Infrastructure Sequencing', 'Resilience', 'Redundancy'],
+    equations: [],
+    applications: ['New settlements', 'Camp planning', 'Reconstruction prioritization'],
+    related: ['eng-civil-001', 'eng-env-001', 'agri-001'],
+    references: ['Urban planning and emergency settlement principles', 'Sphere Handbook'],
+    lastUpdated: '2097-01-15',
+    classification: 'Civilization Planning'
+  }
+];
+
+// ============================================================
+//  MISSIONS DATA
+// ============================================================
+const MissionsData = [
+  {
+    id: 'm001',
+    title: 'Survey Local Water Sources',
+    category: 'Exploration',
+    description: 'Locate and assess water sources within 5 km of the primary settlement. Document quality indicators and flow estimates.',
+    requirements: ['Population >= 10', 'Basic tools'],
+    objectives: ['Map at least 3 water sources', 'Record basic quality notes', 'Identify contamination risks'],
+    completionCondition: 'sources_mapped >= 3',
+    rewards: { knowledge: 'eng-env-001', resources: { water: 50 } },
+    progress: 0,
+    status: 'available',
+    relatedArticles: ['eng-env-001']
+  },
+  {
+    id: 'm002',
+    title: 'Establish Seed Nursery',
+    category: 'Agriculture',
+    description: 'Create a protected growing area for seed germination and early plant development.',
+    requirements: ['Food production infrastructure', 'Water access'],
+    objectives: ['Build nursery structure', 'Plant first crop batch', 'Document germination rates'],
+    completionCondition: 'nursery_built && crops_planted',
+    rewards: { knowledge: 'agri-001', resources: { food: 30 } },
+    progress: 0,
+    status: 'available',
+    relatedArticles: ['agri-001', 'agri-002']
+  },
+  {
+    id: 'm003',
+    title: 'Recover Pre-Collapse Technical Manuals',
+    category: 'Knowledge Recovery',
+    description: 'Search designated archive sectors for intact technical documentation on energy and water systems.',
+    requirements: ['Archive access'],
+    objectives: ['Search 3 archive sectors', 'Catalog recovered documents', 'Cross-reference with existing knowledge base'],
+    completionCondition: 'documents_recovered >= 5',
+    rewards: { knowledge: null, archiveIntegrity: 1.5 },
+    progress: 0,
+    status: 'available',
+    relatedArticles: ['cs-001', 'eng-energy-001']
+  },
+  {
+    id: 'm004',
+    title: 'Deploy Solar Array Prototype',
+    category: 'Energy',
+    description: 'Assemble and test a small photovoltaic array using available components. Measure output under local conditions.',
+    requirements: ['Energy generation infrastructure level 1', 'Engineering knowledge'],
+    objectives: ['Assemble array', 'Measure open-circuit voltage and short-circuit current', 'Estimate daily energy yield'],
+    completionCondition: 'array_deployed && measurements_logged',
+    rewards: { resources: { energy: 100 }, knowledge: 'eng-energy-001' },
+    progress: 0,
+    status: 'locked',
+    relatedArticles: ['eng-energy-001', 'eng-elec-001']
+  },
+  {
+    id: 'm005',
+    title: 'First Aid Training Program',
+    category: 'Scientific Research',
+    description: 'Train settlement members in basic first aid and establish a medical supply inventory system.',
+    requirements: ['Medical supplies > 10', 'Population >= 20'],
+    objectives: ['Train 5 members', 'Inventory medical supplies', 'Create emergency response protocol'],
+    completionCondition: 'trained >= 5',
+    rewards: { knowledge: 'med-001' },
+    progress: 0,
+    status: 'available',
+    relatedArticles: ['med-001', 'med-002']
+  }
+];
+
+// ============================================================
+//  TIMELINE DATA (explicitly fictional)
+// ============================================================
+const TimelineData = [
+  { era: 'Before the Collapse', year: '2020–2045', title: 'Peak Interconnected Civilization', desc: 'Global digital networks, advanced manufacturing, and scientific collaboration reach unprecedented scale. Early climate and resource stresses accumulate.', fictional: true },
+  { era: 'The First Crisis', year: '2046–2052', title: 'Cascading Infrastructure Failures', desc: 'A sequence of extreme climate events, energy grid failures, and supply-chain ruptures overwhelm response capacity in multiple regions simultaneously.', fictional: true },
+  { era: 'Infrastructure Failure', year: '2053–2060', title: 'Grid and Network Fragmentation', desc: 'Long-distance power transmission and global data networks degrade. Local communities become increasingly isolated. Knowledge preservation becomes urgent.', fictional: true },
+  { era: 'Global Fragmentation', year: '2061–2075', title: 'Regional Isolation', desc: 'Surviving population centers operate largely independently. Trade is limited. Scientific institutions collapse or go silent.', fictional: true },
+  { era: 'The Dark Years', year: '2076–2088', title: 'Knowledge Attrition', desc: 'Without systematic education and archival maintenance, specialized knowledge erodes. Practical survival skills dominate. Digital archives degrade from neglect and environmental damage.', fictional: true },
+  { era: 'The Archive Discovery', year: '2089–2093', title: 'AFTER//ZERO Activation', desc: 'A surviving offline knowledge system is recovered and reactivated. It contains scientific, engineering, and civilizational records. Reconstruction begins around the archive.', fictional: true },
+  { era: 'The Reconstruction Era', year: '2094–present', title: 'Rebuilding from Knowledge', desc: 'Small settlements use the archive to restore water systems, energy production, agriculture, and education. The work continues.', fictional: true }
+];
+
+// ============================================================
+//  SIMULATION ENGINE
+// ============================================================
+const SimulationEngine = {
+  // Deterministic formulas — all inspectable
+  // Daily consumption per person:
+  //   water: 3 L (drinking + basic hygiene minimum educational model)
+  //   food: 0.6 kg dry-equivalent
+  //   energy: 2 kWh (very basic settlement)
+  defaults: {
+    waterPerPerson: 3,      // L/day
+    foodPerPerson: 0.6,     // kg/day
+    energyPerPerson: 2,     // kWh/day
+    medicalPerPerson: 0.02, // units/day
+  },
+
+  createSettlement(config) {
+    return {
+      id: 'set_' + Date.now(),
+      name: config.name || 'New Settlement',
+      population: config.population || 50,
+      day: 0,
+      resources: {
+        water: config.water || 5000,       // L
+        food: config.food || 800,          // kg
+        energy: config.energy || 200,      // kWh stored
+        fuel: config.fuel || 100,          // L
+        materials: config.materials || 200,
+        medical: config.medical || 50,
+        tools: config.tools || 30
+      },
+      infrastructure: {
+        shelters: config.shelters || 10,
+        waterTreatment: config.waterTreatment || 1,
+        energyGen: config.energyGen || 1,      // relative capacity units
+        foodProduction: config.foodProduction || 1,
+        storage: config.storage || 1,
+        medicalFac: config.medicalFac || 0,
+        researchLab: config.researchLab || 0
+      },
+      production: {
+        waterPerDay: 0,
+        foodPerDay: 0,
+        energyPerDay: 0
+      },
+      history: [],
+      created: new Date().toISOString()
+    };
+  },
+
+  // Calculate daily balances
+  calculateDay(settlement) {
+    const d = this.defaults;
+    const pop = settlement.population;
+    const infra = settlement.infrastructure;
+
+    // Production (simplified educational model)
+    // Water treatment capacity: 500 L/day per unit
+    const waterProd = infra.waterTreatment * 500;
+    // Food production: 20 kg/day per unit (greenhouse/field equivalent)
+    const foodProd = infra.foodProduction * 20;
+    // Energy: 30 kWh/day per generation unit (mixed solar/other)
+    const energyProd = infra.energyGen * 30;
+
+    // Consumption
+    const waterCons = pop * d.waterPerPerson;
+    const foodCons = pop * d.foodPerPerson;
+    const energyCons = pop * d.energyPerPerson + infra.shelters * 0.5 + infra.researchLab * 5;
+    const medicalCons = pop * d.medicalPerPerson;
+
+    // Net
+    const waterNet = waterProd - waterCons;
+    const foodNet = foodProd - foodCons;
+    const energyNet = energyProd - energyCons;
+
+    // Apply storage limits (storage unit = 2000 L water / 500 kg food / 100 kWh)
+    const maxWater = 2000 + infra.storage * 2000;
+    const maxFood = 500 + infra.storage * 500;
+    const maxEnergy = 50 + infra.storage * 100;
+
+    // Update resources
+    settlement.resources.water = Math.max(0, Math.min(maxWater, settlement.resources.water + waterNet));
+    settlement.resources.food = Math.max(0, Math.min(maxFood, settlement.resources.food + foodNet));
+    settlement.resources.energy = Math.max(0, Math.min(maxEnergy, settlement.resources.energy + energyNet));
+    settlement.resources.medical = Math.max(0, settlement.resources.medical - medicalCons);
+
+    settlement.production = { waterPerDay: waterProd, foodPerDay: foodProd, energyPerDay: energyProd };
+    settlement.day += 1;
+
+    // Record history snapshot
+    settlement.history.push({
+      day: settlement.day,
+      water: Math.round(settlement.resources.water),
+      food: Math.round(settlement.resources.food * 10) / 10,
+      energy: Math.round(settlement.resources.energy * 10) / 10,
+      population: pop
+    });
+    if (settlement.history.length > 365) settlement.history.shift();
+
+    // Population effects (simplified)
+    if (settlement.resources.water < pop * d.waterPerPerson * 0.5 ||
+        settlement.resources.food < pop * d.foodPerPerson * 0.5) {
+      // Hardship — no auto population change in basic model; flag only
+    }
+
+    return {
+      waterNet, foodNet, energyNet,
+      waterProd, foodProd, energyProd,
+      waterCons, foodCons, energyCons,
+      maxWater, maxFood, maxEnergy
+    };
+  },
+
+  formulas() {
+    return {
+      waterConsumption: 'population × 3 L/person/day',
+      foodConsumption: 'population × 0.6 kg/person/day',
+      energyConsumption: 'population × 2 kWh/person/day + shelters×0.5 + labs×5',
+      waterProduction: 'waterTreatment units × 500 L/day',
+      foodProduction: 'foodProduction units × 20 kg/day',
+      energyProduction: 'energyGen units × 30 kWh/day',
+      storageWater: '2000 + storage×2000 L',
+      storageFood: '500 + storage×500 kg',
+      storageEnergy: '50 + storage×100 kWh',
+      note: 'Educational deterministic model. Not a scientific prediction of real settlement dynamics.'
+    };
+  }
+};
+
+// ============================================================
+//  SEARCH ENGINE (local keyword)
+// ============================================================
+const SearchEngine = {
+  index: [],
+
+  buildIndex(articles) {
+    this.index = articles.map(a => ({
+      id: a.id,
+      title: a.title.toLowerCase(),
+      domain: a.domain.toLowerCase(),
+      category: a.category.toLowerCase(),
+      summary: (a.summary || '').toLowerCase(),
+      content: (a.content || '').replace(/<[^>]+>/g, ' ').toLowerCase(),
+      tags: (a.keyConcepts || []).map(k => k.toLowerCase())
+    }));
+  },
+
+  search(query, filters = {}) {
+    if (!query || query.trim().length < 1) return [];
+    const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 1);
+    if (terms.length === 0) return [];
+
+    const results = this.index.map(item => {
+      let score = 0;
+      terms.forEach(term => {
+        if (item.title.includes(term)) score += 10;
+        if (item.domain.includes(term)) score += 5;
+        if (item.category.includes(term)) score += 4;
+        if (item.tags.some(t => t.includes(term))) score += 3;
+        if (item.summary.includes(term)) score += 2;
+        if (item.content.includes(term)) score += 1;
+      });
+      if (filters.domain && item.domain !== filters.domain.toLowerCase()) score = 0;
+      return { id: item.id, score };
+    }).filter(r => r.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    return results;
+  }
+};
+
+// ============================================================
+//  WEBGL PLANET ENGINE
+// ============================================================
+const PlanetEngine = {
+  canvas: null,
+  gl: null,
+  program: null,
+  animationId: null,
+  rotation: 0,
+  cameraDistance: 3.2,
+  isDragging: false,
+  lastX: 0,
+  lastY: 0,
+  rotX: 0.3,
+  rotY: 0,
+  quality: 'medium',
+
+  vertexShaderSource: `#version 300 es
+    in vec3 aPosition;
+    in vec3 aNormal;
+    uniform mat4 uMVP;
+    uniform mat4 uModel;
+    out vec3 vNormal;
+    out vec3 vPos;
+    void main() {
+      vPos = (uModel * vec4(aPosition, 1.0)).xyz;
+      vNormal = mat3(uModel) * aNormal;
+      gl_Position = uMVP * vec4(aPosition, 1.0);
+    }
+  `,
+
+  fragmentShaderSource: `#version 300 es
+    precision mediump float;
+    in vec3 vNormal;
+    in vec3 vPos;
+    uniform vec3 uLightDir;
+    uniform float uTime;
+    out vec4 fragColor;
+    void main() {
+      vec3 n = normalize(vNormal);
+      float diff = max(dot(n, normalize(uLightDir)), 0.0);
+      // Procedural terrain-ish coloring
+      float lat = vPos.y;
+      float lon = atan(vPos.z, vPos.x);
+      float terrain = sin(lat * 8.0 + lon * 3.0) * 0.5 + sin(lat * 15.0) * 0.3;
+      vec3 land = vec3(0.12, 0.28, 0.15);
+      vec3 ocean = vec3(0.05, 0.12, 0.28);
+      vec3 ice = vec3(0.75, 0.8, 0.85);
+      vec3 base = mix(ocean, land, smoothstep(-0.15, 0.25, terrain));
+      base = mix(base, ice, smoothstep(0.7, 0.95, abs(lat)));
+      // Atmosphere rim
+      float rim = pow(1.0 - max(dot(n, vec3(0.0, 0.0, 1.0)), 0.0), 2.5);
+      vec3 atmos = vec3(0.3, 0.55, 1.0) * rim * 0.6;
+      vec3 color = base * (0.15 + 0.85 * diff) + atmos;
+      // Night side subtle city lights (fictional)
+      float night = smoothstep(0.1, -0.2, diff);
+      float cities = step(0.92, sin(lon * 40.0) * sin(lat * 30.0));
+      color += vec3(1.0, 0.85, 0.4) * cities * night * 0.35;
+      fragColor = vec4(color, 1.0);
+    }
+  `,
+
+  init(canvas) {
+    this.canvas = canvas;
+    const gl = canvas.getContext('webgl2', { antialias: true, alpha: false });
+    if (!gl) {
+      AppState.webglSupported = false;
+      return false;
+    }
+    this.gl = gl;
+    AppState.webglSupported = true;
+
+    const vs = this.compileShader(gl.VERTEX_SHADER, this.vertexShaderSource);
+    const fs = this.compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderSource);
+    if (!vs || !fs) return false;
+
+    this.program = gl.createProgram();
+    gl.attachShader(this.program, vs);
+    gl.attachShader(this.program, fs);
+    gl.linkProgram(this.program);
+    if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
+      console.error('Program link error:', gl.getProgramInfoLog(this.program));
+      return false;
+    }
+
+    this.createSphere(48, 48);
+    this.setupEvents();
+    this.resize();
+    return true;
+  },
+
+  compileShader(type, source) {
+    const gl = this.gl;
+    const s = gl.createShader(type);
+    gl.shaderSource(s, source);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error('Shader error:', gl.getShaderInfoLog(s));
+      gl.deleteShader(s);
+      return null;
+    }
+    return s;
+  },
+
+  createSphere(latBands, longBands) {
+    const gl = this.gl;
+    const positions = [];
+    const normals = [];
+    const indices = [];
+
+    for (let lat = 0; lat <= latBands; lat++) {
+      const theta = lat * Math.PI / latBands;
+      const sinTheta = Math.sin(theta);
+      const cosTheta = Math.cos(theta);
+      for (let lon = 0; lon <= longBands; lon++) {
+        const phi = lon * 2 * Math.PI / longBands;
+        const x = Math.cos(phi) * sinTheta;
+        const y = cosTheta;
+        const z = Math.sin(phi) * sinTheta;
+        positions.push(x, y, z);
+        normals.push(x, y, z);
+      }
+    }
+    for (let lat = 0; lat < latBands; lat++) {
+      for (let lon = 0; lon < longBands; lon++) {
+        const first = lat * (longBands + 1) + lon;
+        const second = first + longBands + 1;
+        indices.push(first, second, first + 1);
+        indices.push(second, second + 1, first + 1);
+      }
+    }
+
+    this.posBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+    this.normBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.normBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+
+    this.idxBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.idxBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    this.indexCount = indices.length;
+  },
+
+  setupEvents() {
+    const c = this.canvas;
+    c.addEventListener('mousedown', e => { this.isDragging = true; this.lastX = e.clientX; this.lastY = e.clientY; });
+    window.addEventListener('mouseup', () => { this.isDragging = false; });
+    window.addEventListener('mousemove', e => {
+      if (!this.isDragging) return;
+      const dx = e.clientX - this.lastX;
+      const dy = e.clientY - this.lastY;
+      this.rotY += dx * 0.005;
+      this.rotX += dy * 0.005;
+      this.rotX = Math.max(-1.4, Math.min(1.4, this.rotX));
+      this.lastX = e.clientX;
+      this.lastY = e.clientY;
+    });
+    c.addEventListener('wheel', e => {
+      e.preventDefault();
+      this.cameraDistance += e.deltaY * 0.002;
+      this.cameraDistance = Math.max(1.6, Math.min(8, this.cameraDistance));
+    }, { passive: false });
+    // Touch
+    c.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        this.isDragging = true;
+        this.lastX = e.touches[0].clientX;
+        this.lastY = e.touches[0].clientY;
+      }
+    }, { passive: true });
+    c.addEventListener('touchend', () => { this.isDragging = false; });
+    c.addEventListener('touchmove', e => {
+      if (!this.isDragging || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - this.lastX;
+      const dy = e.touches[0].clientY - this.lastY;
+      this.rotY += dx * 0.005;
+      this.rotX += dy * 0.005;
+      this.rotX = Math.max(-1.4, Math.min(1.4, this.rotX));
+      this.lastX = e.touches[0].clientX;
+      this.lastY = e.touches[0].clientY;
+    }, { passive: true });
+  },
+
+  resize() {
+    if (!this.canvas || !this.gl) return;
+    const dpr = this.quality === 'high' ? Math.min(window.devicePixelRatio || 1, 2) :
+                this.quality === 'low' ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
+    const w = this.canvas.clientWidth;
+    const h = this.canvas.clientHeight;
+    this.canvas.width = w * dpr;
+    this.canvas.height = h * dpr;
+    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+  },
+
+  // Matrix helpers
+  perspective(fov, aspect, near, far) {
+    const f = 1 / Math.tan(fov / 2);
+    return new Float32Array([
+      f / aspect, 0, 0, 0,
+      0, f, 0, 0,
+      0, 0, (far + near) / (near - far), -1,
+      0, 0, (2 * far * near) / (near - far), 0
+    ]);
+  },
+
+  multiply(a, b) {
+    const o = new Float32Array(16);
+    for (let i = 0; i < 4; i++)
+      for (let j = 0; j < 4; j++)
+        o[i * 4 + j] = a[i * 4] * b[j] + a[i * 4 + 1] * b[4 + j] + a[i * 4 + 2] * b[8 + j] + a[i * 4 + 3] * b[12 + j];
+    return o;
+  },
+
+  lookAt(eye, target, up) {
+    const z = this.normalize([eye[0]-target[0], eye[1]-target[1], eye[2]-target[2]]);
+    const x = this.normalize(this.cross(up, z));
+    const y = this.cross(z, x);
+    return new Float32Array([
+      x[0], y[0], z[0], 0,
+      x[1], y[1], z[1], 0,
+      x[2], y[2], z[2], 0,
+      -this.dot(x, eye), -this.dot(y, eye), -this.dot(z, eye), 1
+    ]);
+  },
+
+  normalize(v) {
+    const l = Math.hypot(v[0], v[1], v[2]) || 1;
+    return [v[0]/l, v[1]/l, v[2]/l];
+  },
+  cross(a, b) { return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; },
+  dot(a, b) { return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; },
+
+  rotateX(a) {
+    const c = Math.cos(a), s = Math.sin(a);
+    return new Float32Array([1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1]);
+  },
+  rotateY(a) {
+    const c = Math.cos(a), s = Math.sin(a);
+    return new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]);
+  },
+  identity() { return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]); },
+
+  render(time) {
+    const gl = this.gl;
+    if (!gl || !this.program) return;
+
+    gl.clearColor(0.01, 0.015, 0.03, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.useProgram(this.program);
+
+    if (!AppState.reducedMotion) this.rotation += 0.0015;
+
+    const aspect = this.canvas.width / this.canvas.height;
+    const proj = this.perspective(0.7, aspect, 0.1, 100);
+    const eye = [0, 0, this.cameraDistance];
+    const view = this.lookAt(eye, [0,0,0], [0,1,0]);
+    let model = this.identity();
+    model = this.multiply(this.rotateX(this.rotX), model);
+    model = this.multiply(this.rotateY(this.rotY + this.rotation), model);
+    const mvp = this.multiply(proj, this.multiply(view, model));
+
+    const uMVP = gl.getUniformLocation(this.program, 'uMVP');
+    const uModel = gl.getUniformLocation(this.program, 'uModel');
+    const uLight = gl.getUniformLocation(this.program, 'uLightDir');
+    const uTime = gl.getUniformLocation(this.program, 'uTime');
+    gl.uniformMatrix4fv(uMVP, false, mvp);
+    gl.uniformMatrix4fv(uModel, false, model);
+    gl.uniform3fv(uLight, [0.6, 0.4, 0.8]);
+    gl.uniform1f(uTime, time * 0.001);
+
+    const aPos = gl.getAttribLocation(this.program, 'aPosition');
+    const aNorm = gl.getAttribLocation(this.program, 'aNormal');
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.posBuffer);
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.normBuffer);
+    gl.enableVertexAttribArray(aNorm);
+    gl.vertexAttribPointer(aNorm, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.idxBuffer);
+    gl.drawElements(gl.TRIANGLES, this.indexCount, gl.UNSIGNED_SHORT, 0);
+  },
+
+  start() {
+    if (this.animationId) return;
+    const loop = (t) => {
+      this.render(t);
+      this.animationId = requestAnimationFrame(loop);
+    };
+    this.animationId = requestAnimationFrame(loop);
+  },
+
+  stop() {
+    if (this.animationId) {
+      cancelAnimationFrame(this.animationId);
+      this.animationId = null;
+    }
+  }
+};
+
+// ============================================================
+//  SCIENTIFIC CALCULATORS
+// ============================================================
+const Calculators = {
+  unitConvert(value, from, to, type) {
+    const tables = {
+      length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.344, ft: 0.3048, in: 0.0254 },
+      mass: { kg: 1, g: 0.001, t: 1000, lb: 0.453592, oz: 0.0283495 },
+      energy: { J: 1, kJ: 1000, Wh: 3600, kWh: 3600000, cal: 4.184, kcal: 4184 },
+      power: { W: 1, kW: 1000, MW: 1e6, hp: 745.7 },
+      volume: { L: 1, mL: 0.001, m3: 1000, gal: 3.78541 },
+      temperature: 'special'
+    };
+    if (type === 'temperature') {
+      let c;
+      if (from === 'C') c = value;
+      else if (from === 'F') c = (value - 32) * 5/9;
+      else if (from === 'K') c = value - 273.15;
+      else return null;
+      if (to === 'C') return c;
+      if (to === 'F') return c * 9/5 + 32;
+      if (to === 'K') return c + 273.15;
+      return null;
+    }
+    const t = tables[type];
+    if (!t || !t[from] || !t[to]) return null;
+    return value * t[from] / t[to];
+  },
+
+  ohmsLaw({ V, I, R }) {
+    if (V != null && I != null) return { R: V / I, P: V * I };
+    if (V != null && R != null) return { I: V / R, P: V * V / R };
+    if (I != null && R != null) return { V: I * R, P: I * I * R };
+    return null;
+  },
+
+  solarEstimate({ dailyWh, peakSunHours, systemEfficiency }) {
+    const eff = systemEfficiency || 0.75;
+    const psh = peakSunHours || 4;
+    const arrayW = dailyWh / (psh * eff);
+    return { arrayWatts: arrayW, arrayKw: arrayW / 1000, note: 'Simplified estimate. Actual yield varies with location, weather, orientation, temperature, and degradation.' };
+  },
+
+  batteryCapacity({ energyWh, voltage, dod }) {
+    const d = dod || 0.5;
+    const ah = energyWh / (voltage * d);
+    return { capacityAh: ah, energyWh, usableWh: energyWh, note: 'DoD affects cycle life. Use manufacturer recommendations.' };
+  },
+
+  waterNeed({ population, litersPerPerson }) {
+    const lpp = litersPerPerson || 3;
+    return {
+      dailyLiters: population * lpp,
+      weeklyLiters: population * lpp * 7,
+      monthlyLiters: population * lpp * 30,
+      note: '3 L/person/day is a minimal drinking+hygiene educational baseline. Real needs are higher for cooking, cleaning, and agriculture.'
+    };
+  },
+
+  kineticEnergy(mass, velocity) {
+    return 0.5 * mass * velocity * velocity;
+  },
+
+  potentialEnergy(mass, height, g = 9.81) {
+    return mass * g * height;
+  }
+};
+
+// ============================================================
+//  UI HELPERS
+// ============================================================
+function $(sel, ctx = document) { return ctx.querySelector(sel); }
+function $$(sel, ctx = document) { return [...ctx.querySelectorAll(sel)]; }
+
+function t(key) {
+  return (I18N[AppState.lang] && I18N[AppState.lang][key]) || I18N.en[key] || key;
+}
+
+function toast(msg, type = 'ok', duration = 3000) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  $('#toast-container').appendChild(el);
+  setTimeout(() => el.remove(), duration);
+}
+
+function log(msg, level = 'info') {
+  const entry = { id: Date.now() + Math.random(), time: new Date().toISOString(), msg, level };
+  AppState.logs.unshift(entry);
+  if (AppState.logs.length > 200) AppState.logs.pop();
+  if (AppState.dbReady) DB.put('logs', entry).catch(() => {});
+}
+
+function showModal(html) {
+  $('#modalContent').innerHTML = html;
+  $('#modalBackdrop').classList.add('show');
+}
+function hideModal() {
+  $('#modalBackdrop').classList.remove('show');
+}
+$('#modalBackdrop').addEventListener('click', e => {
+  if (e.target === $('#modalBackdrop')) hideModal();
+});
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// ============================================================
+//  ROUTER & VIEW RENDERING
+// ============================================================
+const Views = {};
+
+Views.overview = function() {
+  const w = WorldConfig;
+  const dateStr = `${AppState.worldDate.year}.${String(AppState.worldDate.month).padStart(2,'0')}.${String(AppState.worldDate.day).padStart(2,'0')}`;
+  return `
+    <h1 data-i18n="world_overview">${t('world_overview')}</h1>
+    <p class="subtitle" data-i18n="world_subtitle">${t('world_subtitle')}</p>
+    <div class="grid-4 mb-16">
+      <div class="stat-card">
+        <div class="stat-label">Civilization Status</div>
+        <div class="stat-value cyan">${w.civilizationStatus}</div>
+        <div class="stat-sub">World Date: ${dateStr}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Population</div>
+        <div class="stat-value">${w.population.toLocaleString()}</div>
+        <div class="stat-sub">Registered survivors</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Archive Integrity</div>
+        <div class="stat-value ${w.archiveIntegrity > 90 ? 'green' : 'orange'}">${w.archiveIntegrity}%</div>
+        <div class="stat-sub">Knowledge base health</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Missions</div>
+        <div class="stat-value cyan">${w.activeMissions}</div>
+        <div class="stat-sub">In progress</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-header"><h2>Critical Resources</h2></div>
+        <div class="mb-8">
+          <div class="flex-between text-sm"><span>Energy</span><span class="mono">${w.energyAvailable}%</span></div>
+          <div class="resource-bar"><div class="resource-fill energy" style="width:${w.energyAvailable}%"></div></div>
+        </div>
+        <div class="mb-8">
+          <div class="flex-between text-sm"><span>Water</span><span class="mono">${w.waterAvailable}%</span></div>
+          <div class="resource-bar"><div class="resource-fill water" style="width:${w.waterAvailable}%"></div></div>
+        </div>
+        <div class="mb-8">
+          <div class="flex-between text-sm"><span>Food</span><span class="mono">${w.foodAvailable}%</span></div>
+          <div class="resource-bar"><div class="resource-fill food" style="width:${w.foodAvailable}%"></div></div>
+        </div>
+        <div>
+          <div class="flex-between text-sm"><span>Infrastructure</span><span class="mono">${w.infrastructureCondition}%</span></div>
+          <div class="resource-bar"><div class="resource-fill materials" style="width:${w.infrastructureCondition}%"></div></div>
+        </div>
+        <p class="text-sm text-muted mt-12">Values from world configuration (static baseline). Adjust via Survival Simulator for dynamic models.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h2>Environmental Conditions</h2></div>
+        <table>
+          <tr><td>Global Temp Anomaly</td><td class="mono">+${w.globalTempAnomaly} °C</td></tr>
+          <tr><td>Atmospheric CO₂</td><td class="mono">${w.atmosphericCO2} ppm</td></tr>
+          <tr><td>Source</td><td class="text-muted">World configuration (fictional baseline)</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-header"><h2>Recent Discoveries</h2></div>
+        ${w.discoveries.map(d => `
+          <div class="log-entry">
+            <span class="log-time">${d.date}</span>
+            <span class="log-msg">${escapeHtml(d.title)} <span class="tag">${d.type}</span></span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="panel">
+        <div class="panel-header"><h2>System Activity Log</h2>
+          <button class="btn" onclick="App.clearLogs()">Clear</button>
+        </div>
+        <div id="sysLog" style="max-height:200px;overflow-y:auto">
+          ${AppState.logs.slice(0, 15).map(l => `
+            <div class="log-entry">
+              <span class="log-time">${new Date(l.time).toLocaleTimeString()}</span>
+              <span class="log-msg ${l.level}">${escapeHtml(l.msg)}</span>
+            </div>
+          `).join('') || '<div class="text-muted text-sm">No recent activity</div>'}
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+Views.planet = function() {
+  return `
+    <h1>Planetary Atlas</h1>
+    <p class="subtitle">Procedural planetary model — WebGL 2 rendering. Not an accurate satellite map. Drag to rotate, scroll to zoom.</p>
+    <div id="planet-container" style="flex:1;min-height:450px">
+      <canvas id="planet-canvas"></canvas>
+      <div class="planet-overlay">
+        <div>RENDER: <span id="planetRenderStatus">INITIALIZING</span></div>
+        <div>MODEL: PROCEDURAL EARTH-LIKE</div>
+        <div>COORDS: <span id="planetCoords">—</span></div>
+      </div>
+      <div class="planet-controls">
+        <button class="btn" onclick="PlanetEngine.cameraDistance=3.2;PlanetEngine.rotX=0.3;PlanetEngine.rotY=0">Reset View</button>
+        <button class="btn" onclick="App.setGraphicsQuality('low')">Low</button>
+        <button class="btn" onclick="App.setGraphicsQuality('medium')">Medium</button>
+        <button class="btn" onclick="App.setGraphicsQuality('high')">High</button>
+      </div>
+    </div>
+    <div class="panel mt-16">
+      <h2>About This Visualization</h2>
+      <p class="text-sm text-muted">This is a real-time WebGL 2 procedural planetary rendering with custom vertex and fragment shaders, lighting, atmospheric rim effects, and interactive camera controls. It does not use external map tiles or satellite imagery. Surface features are procedurally generated and are not geographically accurate. Coordinates shown are model-space approximations.</p>
+    </div>
+  `;
+};
+
+Views.archive = function() {
+  return `
+    <h1>Knowledge Archive</h1>
+    <p class="subtitle">Offline scientific and engineering encyclopedia. All content stored locally.</p>
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input type="search" id="archiveSearch" placeholder="${t('search_placeholder')}" autocomplete="off">
+    </div>
+    <div class="form-inline mb-16">
+      <div class="form-row">
+        <label>Domain</label>
+        <select id="domainFilter">
+          <option value="">All Domains</option>
+          <option>Physics</option>
+          <option>Mathematics</option>
+          <option>Chemistry</option>
+          <option>Biology</option>
+          <option>Computer Science</option>
+          <option>Engineering</option>
+          <option>Energy Systems</option>
+          <option>Agriculture and Food</option>
+          <option>Medicine and Public Health</option>
+          <option>Earth and Space Sciences</option>
+          <option>Architecture and Civilization</option>
+        </select>
+      </div>
+      <button class="btn primary" onclick="App.searchArchive()">Search</button>
+      <button class="btn" onclick="App.resetArchiveSearch()">Reset</button>
+    </div>
+    <div id="archiveResults" class="article-list"></div>
+    <div id="articleView" class="hidden"></div>
+  `;
+};
+
+Views.simulator = function() {
+  return `
+    <h1>Survival Simulator</h1>
+    <p class="subtitle">${t('sim_note')}</p>
+    <div id="simContainer">
+      <div class="panel">
+        <h2>Create or Load Settlement</h2>
+        <div class="form-inline">
+          <div class="form-row"><label>Name</label><input id="simName" value="Primary Settlement"></div>
+          <div class="form-row"><label>Population</label><input id="simPop" type="number" value="50" min="1" max="100000"></div>
+          <div class="form-row"><label>Initial Water (L)</label><input id="simWater" type="number" value="5000"></div>
+          <div class="form-row"><label>Initial Food (kg)</label><input id="simFood" type="number" value="800"></div>
+        </div>
+        <div class="form-inline mt-12">
+          <div class="form-row"><label>Water Treatment Units</label><input id="simWT" type="number" value="1" min="0"></div>
+          <div class="form-row"><label>Energy Gen Units</label><input id="simEG" type="number" value="1" min="0"></div>
+          <div class="form-row"><label>Food Production Units</label><input id="simFP" type="number" value="1" min="0"></div>
+          <div class="form-row"><label>Storage Units</label><input id="simST" type="number" value="1" min="0"></div>
+        </div>
+        <div class="btn-group mt-16">
+          <button class="btn primary" onclick="App.createSettlement()">Create Settlement</button>
+          <button class="btn" onclick="App.loadSettlement()">Load Saved</button>
+        </div>
+      </div>
+      <div id="simActive" class="hidden"></div>
+      <div class="panel mt-16">
+        <h2>Simulation Formulas (Inspectable)</h2>
+        <pre id="simFormulas" class="text-sm"></pre>
+      </div>
+    </div>
+  `;
+};
+
+Views.lab = function() {
+  return `
+    <h1>Scientific Laboratory</h1>
+    <p class="subtitle">Interactive calculators using real formulas. No simulated outputs.</p>
+    <div class="tabs" id="labTabs">
+      <div class="tab active" data-calc="units">Unit Converter</div>
+      <div class="tab" data-calc="ohms">Electrical (Ohm's Law)</div>
+      <div class="tab" data-calc="solar">Solar Estimator</div>
+      <div class="tab" data-calc="battery">Battery Capacity</div>
+      <div class="tab" data-calc="water">Water Needs</div>
+      <div class="tab" data-calc="physics">Physics</div>
+    </div>
+    <div id="calcPanel"></div>
+  `;
+};
+
+Views.engineering = function() {
+  return `
+    <h1>Rebuild Engineering</h1>
+    <p class="subtitle">Practical engineering knowledge for reconstruction. Educational models — not production design documents.</p>
+    <div class="grid-2">
+      <div class="article-item" onclick="App.openArticle('eng-elec-001')">
+        <div class="article-title">Basic Electrical Circuits</div>
+        <div class="article-meta"><span class="article-domain">Electrical Engineering</span></div>
+      </div>
+      <div class="article-item" onclick="App.openArticle('eng-energy-001')">
+        <div class="article-title">Solar Energy Systems</div>
+        <div class="article-meta"><span class="article-domain">Energy Systems</span></div>
+      </div>
+      <div class="article-item" onclick="App.openArticle('eng-energy-002')">
+        <div class="article-title">Energy Storage — Batteries</div>
+        <div class="article-meta"><span class="article-domain">Energy Systems</span></div>
+      </div>
+      <div class="article-item" onclick="App.openArticle('eng-env-001')">
+        <div class="article-title">Water Purification Principles</div>
+        <div class="article-meta"><span class="article-domain">Environmental Engineering</span></div>
+      </div>
+      <div class="article-item" onclick="App.openArticle('eng-civil-001')">
+        <div class="article-title">Shelter and Structural Basics</div>
+        <div class="article-meta"><span class="article-domain">Civil Engineering</span></div>
+      </div>
+      <div class="article-item" onclick="App.openArticle('eng-mat-001')">
+        <div class="article-title">Materials Science Overview</div>
+        <div class="article-meta"><span class="article-domain">Materials Science</span></div>
+      </div>
+    </div>
+  `;
+};
+
+Views.environment = function() {
+  return `
+    <h1>Environment Engine</h1>
+    <p class="subtitle">Interactive environmental parameter exploration. Educational calculations with stated limitations.</p>
+    <div class="grid-2">
+      <div class="panel">
+        <h2>Solar Resource Estimator</h2>
+        <div class="form-row"><label>Daily Energy Need (Wh)</label><input id="envDailyWh" type="number" value="2000"></div>
+        <div class="form-row"><label>Peak Sun Hours</label><input id="envPSH" type="number" value="4" step="0.1"></div>
+        <div class="form-row"><label>System Efficiency (0–1)</label><input id="envEff" type="number" value="0.75" step="0.01" min="0.1" max="1"></div>
+        <button class="btn primary mt-8" onclick="App.calcEnvSolar()">Calculate</button>
+        <div id="envSolarResult" class="calc-result hidden"></div>
+      </div>
+      <div class="panel">
+        <h2>Temperature Conversion</h2>
+        <div class="form-row"><label>Value</label><input id="envTempVal" type="number" value="20"></div>
+        <div class="form-row"><label>From</label>
+          <select id="envTempFrom"><option>C</option><option>F</option><option>K</option></select>
+        </div>
+        <div class="form-row"><label>To</label>
+          <select id="envTempTo"><option>F</option><option>C</option><option>K</option></select>
+        </div>
+        <button class="btn primary mt-8" onclick="App.calcEnvTemp()">Convert</button>
+        <div id="envTempResult" class="calc-result hidden"></div>
+      </div>
+    </div>
+    <div class="panel mt-16">
+      <h2>Water Demand Model</h2>
+      <div class="form-inline">
+        <div class="form-row"><label>Population</label><input id="envPop" type="number" value="100"></div>
+        <div class="form-row"><label>L per person per day</label><input id="envLpp" type="number" value="3" step="0.5"></div>
+        <button class="btn primary" onclick="App.calcEnvWater()">Calculate</button>
+      </div>
+      <div id="envWaterResult" class="calc-result hidden mt-12"></div>
+    </div>
+    <p class="text-sm text-muted mt-16">All formulas are deterministic educational models. Real environmental systems are more complex and site-specific.</p>
+  `;
+};
+
+Views.missions = function() {
+  return `
+    <h1>Missions & Exploration</h1>
+    <p class="subtitle">Functional mission tracking connected to knowledge and simulation systems.</p>
+    <div id="missionList"></div>
+  `;
+};
+
+Views.timeline = function() {
+  return `
+    <h1>Civilization Timeline</h1>
+    <p class="subtitle">${t('fictional_note')}</p>
+    <div class="timeline">
+      ${TimelineData.map(item => `
+        <div class="timeline-item ${item.fictional ? 'fictional' : ''}">
+          <div class="timeline-era">${escapeHtml(item.era)} · ${escapeHtml(item.year)}</div>
+          <div class="timeline-title">${escapeHtml(item.title)}</div>
+          <div class="timeline-desc">${escapeHtml(item.desc)}</div>
+          ${item.fictional ? '<span class="tag">FICTIONAL</span>' : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+};
+
+Views.manager = function() {
+  return `
+    <h1>Archive Manager</h1>
+    <p class="subtitle">Create, edit, import, and export knowledge. All data stored in IndexedDB.</p>
+    <div class="btn-group mb-16">
+      <button class="btn primary" onclick="App.showCreateArticle()">Create Article</button>
+      <button class="btn" onclick="App.exportArchive()">Export JSON</button>
+      <button class="btn" onclick="App.triggerImport()">Import JSON</button>
+      <button class="btn" onclick="App.fullBackup()">Full Backup</button>
+      <input type="file" id="importFile" accept=".json" class="hidden" onchange="App.importArchive(event)">
+    </div>
+    <div class="panel">
+      <h2>Database Status</h2>
+      <div id="dbStatus">Loading...</div>
+    </div>
+    <div class="panel mt-16">
+      <h2>Your Articles</h2>
+      <div id="userArticles" class="article-list"></div>
+    </div>
+  `;
+};
+
+Views.system = function() {
+  return `
+    <h1>System</h1>
+    <p class="subtitle">Settings, diagnostics, and performance.</p>
+    <div class="grid-2">
+      <div class="panel">
+        <h2>Localization</h2>
+        <div class="form-row">
+          <label>${t('lang')}</label>
+          <select id="langSelect" onchange="App.setLang(this.value)">
+            <option value="en" ${AppState.lang==='en'?'selected':''}>English</option>
+            <option value="fa" ${AppState.lang==='fa'?'selected':''}>فارسی (Persian)</option>
+          </select>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Graphics</h2>
+        <div class="form-row">
+          <label>Quality</label>
+          <select id="gfxSelect" onchange="App.setGraphicsQuality(this.value)">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        <div class="form-row mt-8">
+          <label><input type="checkbox" id="reducedMotion" onchange="AppState.reducedMotion=this.checked"> Reduced Motion</label>
+        </div>
+      </div>
+    </div>
+    <div class="panel mt-16">
+      <h2>Diagnostics</h2>
+      <table>
+        <tr><td>IndexedDB</td><td id="diagDB">—</td></tr>
+        <tr><td>WebGL 2</td><td id="diagGL">—</td></tr>
+        <tr><td>WebAssembly</td><td id="diagWASM">—</td></tr>
+        <tr><td>Web Workers</td><td id="diagWorkers">—</td></tr>
+        <tr><td>Web Crypto</td><td id="diagCrypto">—</td></tr>
+        <tr><td>Service Worker</td><td id="diagSW">—</td></tr>
+        <tr><td>Articles in DB</td><td id="diagArticles">—</td></tr>
+      </table>
+      <div class="btn-group mt-12">
+        <button class="btn" onclick="App.togglePerf()">Toggle Performance Monitor</button>
+        <button class="btn" onclick="App.runDiagnostics()">Refresh Diagnostics</button>
+      </div>
+    </div>
+    <div class="panel mt-16">
+      <h2>About AFTER//ZERO</h2>
+      <p class="text-sm">AFTER//ZERO is an offline-first digital world and knowledge archive. It combines a fictional post-collapse setting (2097) with real scientific and engineering knowledge. All computation and storage occur locally in your browser. No data is transmitted to any server.</p>
+      <p class="text-sm mt-8 text-muted">Version 1.0.0 · Standalone HTML delivery · No external dependencies</p>
+    </div>
+  `;
+};
+
+// ============================================================
+//  APPLICATION CONTROLLER
+// ============================================================
+const App = {
+  currentSettlement: null,
+  articles: [],
+
+  async init() {
+    log('AFTER//ZERO initializing...', 'ok');
+    try {
+      await DB.init();
+      log('IndexedDB ready', 'ok');
+    } catch (e) {
+      log('IndexedDB failed: ' + e.message, 'crit');
+      toast('Database unavailable — running in memory only', 'err');
+    }
+
+    // Seed knowledge if empty
+    const count = AppState.dbReady ? await DB.count('articles') : 0;
+    if (count === 0) {
+      for (const a of KnowledgeData) {
+        if (AppState.dbReady) await DB.put('articles', a);
+      }
+      log(`Seeded ${KnowledgeData.length} knowledge articles`, 'ok');
+    }
+
+    // Load articles
+    this.articles = AppState.dbReady ? await DB.getAll('articles') : [...KnowledgeData];
+    SearchEngine.buildIndex(this.articles);
+
+    // Seed missions
+    if (AppState.dbReady) {
+      const mCount = await DB.count('missions');
+      if (mCount === 0) {
+        for (const m of MissionsData) await DB.put('missions', m);
+      }
+    }
+
+    // Capability detection
+    AppState.webglSupported = !!document.createElement('canvas').getContext('webgl2');
+    AppState.wasmSupported = typeof WebAssembly === 'object';
+
+    this.bindNav();
+    this.startClock();
+    this.navigate('overview');
+    this.applyI18n();
+    log('System online', 'ok');
+  },
+
+  bindNav() {
+    $$('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const view = item.dataset.view;
+        if (view) this.navigate(view);
+        $('#sidebar').classList.remove('open');
+      });
+    });
+    $('#mobileMenuBtn').addEventListener('click', () => {
+      $('#sidebar').classList.toggle('open');
+    });
+  },
+
+  navigate(view) {
+    PlanetEngine.stop();
+    AppState.currentView = view;
+    $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+    const content = $('#content');
+    content.innerHTML = `<div class="view active" id="view-${view}">${Views[view] ? Views[view]() : '<p>View not found</p>'}</div>`;
+
+    // Post-render hooks
+    if (view === 'planet') this.initPlanet();
+    if (view === 'archive') this.renderArchiveList();
+    if (view === 'simulator') {
+      $('#simFormulas').textContent = JSON.stringify(SimulationEngine.formulas(), null, 2);
+      if (this.currentSettlement) this.renderSettlement();
+    }
+    if (view === 'lab') this.initLab();
+    if (view === 'missions') this.renderMissions();
+    if (view === 'manager') this.renderManager();
+    if (view === 'system') this.runDiagnostics();
+    if (view === 'environment') { /* ready */ }
+  },
+
+  initPlanet() {
+    const canvas = $('#planet-canvas');
+    if (!canvas) return;
+    const ok = PlanetEngine.init(canvas);
+    const status = $('#planetRenderStatus');
+    if (ok) {
+      status.textContent = 'WEBGL2 ACTIVE';
+      PlanetEngine.quality = AppState.graphicsQuality;
+      PlanetEngine.resize();
+      PlanetEngine.start();
+      window.addEventListener('resize', () => PlanetEngine.resize());
+    } else {
+      status.textContent = 'WEBGL2 UNAVAILABLE — FALLBACK';
+      // Canvas 2D fallback
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+      ctx.fillStyle = '#020308';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#168CFF';
+      ctx.font = '14px monospace';
+      ctx.fillText('WebGL 2 not available. Procedural 3D planet requires WebGL 2.', 20, 40);
+    }
+  },
+
+  setGraphicsQuality(q) {
+    AppState.graphicsQuality = q;
+    PlanetEngine.quality = q;
+    PlanetEngine.resize();
+    toast('Graphics quality: ' + q, 'ok');
+  },
+
+  async renderArchiveList(results) {
+    const container = $('#archiveResults');
+    const articleView = $('#articleView');
+    if (!container) return;
+    articleView.classList.add('hidden');
+    container.classList.remove('hidden');
+
+    let list = results || this.articles;
+    if (results && results.length && results[0].id) {
+      // search results with scores
+      list = results.map(r => this.articles.find(a => a.id === r.id)).filter(Boolean);
+    }
+
+    if (!list.length) {
+      container.innerHTML = `<div class="empty-state"><h3>${t('no_results')}</h3></div>`;
+      return;
+    }
+
+    container.innerHTML = list.map(a => `
+      <div class="article-item" data-id="${a.id}">
+        <div class="article-title">${escapeHtml(a.title)}</div>
+        <div class="article-meta">
+          <span class="article-domain">${escapeHtml(a.domain)}</span>
+          <span>${escapeHtml(a.category)}</span>
+          <span>${escapeHtml(a.classification || '')}</span>
+        </div>
+        <p class="text-sm text-muted mt-8">${escapeHtml(a.summary || '')}</p>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.article-item').forEach(el => {
+      el.addEventListener('click', () => this.openArticle(el.dataset.id));
+    });
+  },
+
+  openArticle(id) {
+    const a = this.articles.find(x => x.id === id);
+    if (!a) { toast('Article not found', 'err'); return; }
+
+    // If in archive view
+    const container = $('#archiveResults');
+    const articleView = $('#articleView');
+    if (container && articleView) {
+      container.classList.add('hidden');
+      articleView.classList.remove('hidden');
+      articleView.innerHTML = `
+        <button class="btn mb-16" onclick="App.renderArchiveList()">← Back to list</button>
+        <div class="article-content">
+          <h1>${escapeHtml(a.title)}</h1>
+          <div class="article-meta mb-16">
+            <span class="tag">${escapeHtml(a.domain)}</span>
+            <span class="tag">${escapeHtml(a.category)}</span>
+            <span class="text-muted">${escapeHtml(a.classification || '')}</span>
+            <span class="text-muted">Updated: ${escapeHtml(a.lastUpdated || '')}</span>
+          </div>
+          <p><em>${escapeHtml(a.summary || '')}</em></p>
+          ${a.content}
+          ${a.keyConcepts && a.keyConcepts.length ? `<h2>Key Concepts</h2><p>${a.keyConcepts.map(k => `<span class="tag">${escapeHtml(k)}</span>`).join('')}</p>` : ''}
+          ${a.equations && a.equations.length ? `<h2>Equations</h2><div class="equation">${a.equations.map(e => escapeHtml(e)).join('<br>')}</div>` : ''}
+          ${a.applications && a.applications.length ? `<h2>Applications</h2><ul>${a.applications.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>` : ''}
+          ${a.references && a.references.length ? `<h2>References</h2><ul>${a.references.map(x => `<li>${escapeHtml(x)}</li>`).join('')}</ul>` : ''}
+          ${a.related && a.related.length ? `<h2>Related</h2><p>${a.related.map(rid => {
+            const rel = this.articles.find(x => x.id === rid);
+            return rel ? `<a href="#" class="text-cyan" onclick="App.openArticle('${rid}');return false">${escapeHtml(rel.title)}</a>` : '';
+          }).join(' · ')}</p>` : ''}
+        </div>
+      `;
+      return;
+    }
+
+    // Otherwise open in modal or navigate
+    this.navigate('archive');
+    setTimeout(() => this.openArticle(id), 50);
+  },
+
+  searchArchive() {
+    const q = $('#archiveSearch')?.value || '';
+    const domain = $('#domainFilter')?.value || '';
+    const results = SearchEngine.search(q, { domain });
+    if (!q && !domain) {
+      this.renderArchiveList();
+      return;
+    }
+    if (domain && !q) {
+      this.renderArchiveList(this.articles.filter(a => a.domain === domain));
+      return;
+    }
+    this.renderArchiveList(results);
+    log(`Search: "${q}" → ${results.length} results`);
+  },
+
+  resetArchiveSearch() {
+    if ($('#archiveSearch')) $('#archiveSearch').value = '';
+    if ($('#domainFilter')) $('#domainFilter').value = '';
+    this.renderArchiveList();
+  },
+
+  createSettlement() {
+    const config = {
+      name: $('#simName')?.value || 'Settlement',
+      population: parseInt($('#simPop')?.value) || 50,
+      water: parseFloat($('#simWater')?.value) || 5000,
+      food: parseFloat($('#simFood')?.value) || 800,
+      waterTreatment: parseInt($('#simWT')?.value) || 1,
+      energyGen: parseInt($('#simEG')?.value) || 1,
+      foodProduction: parseInt($('#simFP')?.value) || 1,
+      storage: parseInt($('#simST')?.value) || 1,
+    };
+    this.currentSettlement = SimulationEngine.createSettlement(config);
+    if (AppState.dbReady) DB.put('settlements', this.currentSettlement);
+    log('Settlement created: ' + config.name, 'ok');
+    toast('Settlement created', 'ok');
+    this.renderSettlement();
+  },
+
+  async loadSettlement() {
+    if (!AppState.dbReady) { toast('Database not available', 'err'); return; }
+    const all = await DB.getAll('settlements');
+    if (!all.length) { toast('No saved settlements', 'warn'); return; }
+    this.currentSettlement = all[all.length - 1];
+    toast('Loaded: ' + this.currentSettlement.name, 'ok');
+    this.renderSettlement();
+  },
+
+  renderSettlement() {
+    const s = this.currentSettlement;
+    if (!s) return;
+    const el = $('#simActive');
+    if (!el) return;
+    el.classList.remove('hidden');
+    const r = s.resources;
+    const maxW = 2000 + s.infrastructure.storage * 2000;
+    const maxF = 500 + s.infrastructure.storage * 500;
+    const maxE = 50 + s.infrastructure.storage * 100;
+
+    el.innerHTML = `
+      <div class="panel">
+        <div class="panel-header">
+          <h2>${escapeHtml(s.name)} — Day ${s.day}</h2>
+          <div class="btn-group">
+            <button class="btn primary" onclick="App.advanceDay(1)">Advance 1 Day</button>
+            <button class="btn" onclick="App.advanceDay(7)">Advance 7 Days</button>
+            <button class="btn" onclick="App.advanceDay(30)">Advance 30 Days</button>
+            <button class="btn" onclick="App.saveSettlement()">Save State</button>
+          </div>
+        </div>
+        <div class="grid-4 mb-16">
+          <div class="stat-card">
+            <div class="stat-label">Population</div>
+            <div class="stat-value">${s.population}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Water</div>
+            <div class="stat-value cyan">${Math.round(r.water)} L</div>
+            <div class="resource-bar"><div class="resource-fill water" style="width:${Math.min(100,r.water/maxW*100)}%"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Food</div>
+            <div class="stat-value green">${r.food.toFixed(1)} kg</div>
+            <div class="resource-bar"><div class="resource-fill food" style="width:${Math.min(100,r.food/maxF*100)}%"></div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Energy</div>
+            <div class="stat-value orange">${r.energy.toFixed(1)} kWh</div>
+            <div class="resource-bar"><div class="resource-fill energy" style="width:${Math.min(100,r.energy/maxE*100)}%"></div></div>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div>
+            <h3>Infrastructure</h3>
+            <table>
+              <tr><td>Shelters</td><td>${s.infrastructure.shelters}</td></tr>
+              <tr><td>Water Treatment</td><td>${s.infrastructure.waterTreatment}</td></tr>
+              <tr><td>Energy Generation</td><td>${s.infrastructure.energyGen}</td></tr>
+              <tr><td>Food Production</td><td>${s.infrastructure.foodProduction}</td></tr>
+              <tr><td>Storage</td><td>${s.infrastructure.storage}</td></tr>
+            </table>
+          </div>
+          <div>
+            <h3>Daily Production</h3>
+            <table>
+              <tr><td>Water</td><td>${s.production.waterPerDay} L/day</td></tr>
+              <tr><td>Food</td><td>${s.production.foodPerDay} kg/day</td></tr>
+              <tr><td>Energy</td><td>${s.production.energyPerDay} kWh/day</td></tr>
+            </table>
+          </div>
+          <div>
+            <h3>Other Resources</h3>
+            <table>
+              <tr><td>Medical</td><td>${r.medical.toFixed(1)}</td></tr>
+              <tr><td>Materials</td><td>${r.materials}</td></tr>
+              <tr><td>Tools</td><td>${r.tools}</td></tr>
+              <tr><td>Fuel</td><td>${r.fuel}</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="mt-16">
+          <h3>Build Infrastructure</h3>
+          <div class="btn-group">
+            <button class="btn" onclick="App.buildInfra('waterTreatment')">+ Water Treatment</button>
+            <button class="btn" onclick="App.buildInfra('energyGen')">+ Energy Gen</button>
+            <button class="btn" onclick="App.buildInfra('foodProduction')">+ Food Production</button>
+            <button class="btn" onclick="App.buildInfra('storage')">+ Storage</button>
+            <button class="btn" onclick="App.buildInfra('shelters')">+ Shelter</button>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  advanceDay(n) {
+    if (!this.currentSettlement) return;
+    for (let i = 0; i < n; i++) SimulationEngine.calculateDay(this.currentSettlement);
+    log(`Simulation advanced ${n} day(s) → Day ${this.currentSettlement.day}`);
+    this.renderSettlement();
+  },
+
+  buildInfra(type) {
+    if (!this.currentSettlement) return;
+    const cost = { waterTreatment: 20, energyGen: 25, foodProduction: 15, storage: 10, shelters: 5 };
+    if (this.currentSettlement.resources.materials < (cost[type] || 10)) {
+      toast('Insufficient materials', 'warn');
+      return;
+    }
+    this.currentSettlement.resources.materials -= (cost[type] || 10);
+    this.currentSettlement.infrastructure[type] = (this.currentSettlement.infrastructure[type] || 0) + 1;
+    toast(`Built: ${type}`, 'ok');
+    this.renderSettlement();
+  },
+
+  async saveSettlement() {
+    if (!this.currentSettlement || !AppState.dbReady) return;
+    await DB.put('settlements', this.currentSettlement);
+    toast('Settlement saved', 'ok');
+    log('Settlement state saved');
+  },
+
+  initLab() {
+    $$('#labTabs .tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        $$('#labTabs .tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        this.renderCalc(tab.dataset.calc);
+      });
+    });
+    this.renderCalc('units');
+  },
+
+  renderCalc(type) {
+    const panel = $('#calcPanel');
+    if (!panel) return;
+    const calcs = {
+      units: `
+        <div class="panel">
+          <h2>Unit Converter</h2>
+          <div class="calc-grid">
+            <div class="form-row"><label>Value</label><input id="uVal" type="number" value="1"></div>
+            <div class="form-row"><label>Type</label>
+              <select id="uType"><option>length</option><option>mass</option><option>energy</option><option>power</option><option>volume</option><option>temperature</option></select>
+            </div>
+            <div class="form-row"><label>From</label><input id="uFrom" value="m"></div>
+            <div class="form-row"><label>To</label><input id="uTo" value="ft"></div>
+          </div>
+          <p class="text-sm text-muted mt-8">Length: m, km, cm, mm, mi, ft, in · Mass: kg, g, t, lb, oz · Energy: J, kJ, Wh, kWh, cal, kcal · Power: W, kW, MW, hp · Volume: L, mL, m3, gal · Temp: C, F, K</p>
+          <button class="btn primary mt-12" onclick="App.calcUnits()">Calculate</button>
+          <div id="uResult" class="calc-result hidden"></div>
+        </div>`,
+      ohms: `
+        <div class="panel">
+          <h2>Ohm's Law Calculator</h2>
+          <p class="text-sm text-muted mb-12">Provide any two of V, I, R. The third and power will be calculated. P = VI = I²R = V²/R</p>
+          <div class="calc-grid">
+            <div class="form-row"><label>Voltage (V)</label><input id="ohmV" type="number" placeholder="optional"></div>
+            <div class="form-row"><label>Current (A)</label><input id="ohmI" type="number" placeholder="optional"></div>
+            <div class="form-row"><label>Resistance (Ω)</label><input id="ohmR" type="number" placeholder="optional"></div>
+          </div>
+          <button class="btn primary mt-12" onclick="App.calcOhms()">Calculate</button>
+          <div id="ohmResult" class="calc-result hidden"></div>
+        </div>`,
+      solar: `
+        <div class="panel">
+          <h2>Solar Array Sizing Estimator</h2>
+          <div class="calc-grid">
+            <div class="form-row"><label>Daily Energy Need (Wh)</label><input id="solWh" type="number" value="2000"></div>
+            <div class="form-row"><label>Peak Sun Hours</label><input id="solPSH" type="number" value="4" step="0.1"></div>
+            <div class="form-row"><label>System Efficiency</label><input id="solEff" type="number" value="0.75" step="0.01"></div>
+          </div>
+          <button class="btn primary mt-12" onclick="App.calcSolar()">Calculate</button>
+          <div id="solResult" class="calc-result hidden"></div>
+        </div>`,
+      battery: `
+        <div class="panel">
+          <h2>Battery Capacity Estimator</h2>
+          <div class="calc-grid">
+            <div class="form-row"><label>Usable Energy (Wh)</label><input id="batWh" type="number" value="1500"></div>
+            <div class="form-row"><label>Voltage (V)</label><input id="batV" type="number" value="12"></div>
+            <div class="form-row"><label>Depth of Discharge (0–1)</label><input id="batDoD" type="number" value="0.5" step="0.05"></div>
+          </div>
+          <button class="btn primary mt-12" onclick="App.calcBattery()">Calculate</button>
+          <div id="batResult" class="calc-result hidden"></div>
+        </div>`,
+      water: `
+        <div class="panel">
+          <h2>Water Consumption Estimator</h2>
+          <div class="calc-grid">
+            <div class="form-row"><label>Population</label><input id="watPop" type="number" value="100"></div>
+            <div class="form-row"><label>Liters per person per day</label><input id="watLpp" type="number" value="3" step="0.5"></div>
+          </div>
+          <button class="btn primary mt-12" onclick="App.calcWater()">Calculate</button>
+          <div id="watResult" class="calc-result hidden"></div>
+        </div>`,
+      physics: `
+        <div class="panel">
+          <h2>Physics Calculators</h2>
+          <h3>Kinetic Energy — KE = ½mv²</h3>
+          <div class="calc-grid">
+            <div class="form-row"><label>Mass (kg)</label><input id="keM" type="number" value="10"></div>
+            <div class="form-row"><label>Velocity (m/s)</label><input id="keV" type="number" value="5"></div>
+          </div>
+          <button class="btn primary mt-8" onclick="App.calcKE()">Calculate KE</button>
+          <div id="keResult" class="calc-result hidden"></div>
+          <h3 class="mt-16">Gravitational Potential Energy — PE = mgh</h3>
+          <div class="calc-grid">
+            <div class="form-row"><label>Mass (kg)</label><input id="peM" type="number" value="10"></div>
+            <div class="form-row"><label>Height (m)</label><input id="peH" type="number" value="5"></div>
+            <div class="form-row"><label>g (m/s²)</label><input id="peG" type="number" value="9.81" step="0.01"></div>
+          </div>
+          <button class="btn primary mt-8" onclick="App.calcPE()">Calculate PE</button>
+          <div id="peResult" class="calc-result hidden"></div>
+        </div>`
+    };
+    panel.innerHTML = calcs[type] || '';
+  },
+
+  calcUnits() {
+    const val = parseFloat($('#uVal').value);
+    const type = $('#uType').value;
+    const from = $('#uFrom').value.trim();
+    const to = $('#uTo').value.trim();
+    const result = Calculators.unitConvert(val, from, to, type);
+    const el = $('#uResult');
+    if (result == null || isNaN(result)) {
+      el.classList.remove('hidden');
+      el.innerHTML = '<div class="label">Error</div><div class="value" style="color:var(--alert-red)">Invalid conversion</div>';
+      return;
+    }
+    el.classList.remove('hidden');
+    el.innerHTML = `<div class="label">Result</div><div class="value">${result.toPrecision(8)} ${escapeHtml(to)}</div>`;
+  },
+
+  calcOhms() {
+    const V = $('#ohmV').value !== '' ? parseFloat($('#ohmV').value) : null;
+    const I = $('#ohmI').value !== '' ? parseFloat($('#ohmI').value) : null;
+    const R = $('#ohmR').value !== '' ? parseFloat($('#ohmR').value) : null;
+    const res = Calculators.ohmsLaw({ V, I, R });
+    const el = $('#ohmResult');
+    el.classList.remove('hidden');
+    if (!res) {
+      el.innerHTML = '<div class="label">Error</div><div class="value" style="color:var(--alert-red)">Provide any two of V, I, R</div>';
+      return;
+    }
+    el.innerHTML = `<div class="label">Results</div>
+      <div class="value">${res.V != null ? 'V = ' + res.V.toPrecision(6) + ' V<br>' : ''}
+      ${res.I != null ? 'I = ' + res.I.toPrecision(6) + ' A<br>' : ''}
+      ${res.R != null ? 'R = ' + res.R.toPrecision(6) + ' Ω<br>' : ''}
+      P = ${res.P.toPrecision(6)} W</div>`;
+  },
+
+  calcSolar() {
+    const r = Calculators.solarEstimate({
+      dailyWh: parseFloat($('#solWh').value),
+      peakSunHours: parseFloat($('#solPSH').value),
+      systemEfficiency: parseFloat($('#solEff').value)
+    });
+    const el = $('#solResult');
+    el.classList.remove('hidden');
+    el.innerHTML = `<div class="label">Required Array</div>
+      <div class="value">${r.arrayWatts.toFixed(1)} W (${r.arrayKw.toFixed(3)} kW)</div>
+      <p class="text-sm text-muted mt-8">${r.note}</p>`;
+  },
+
+  calcBattery() {
+    const r = Calculators.batteryCapacity({
+      energyWh: parseFloat($('#batWh').value),
+      voltage: parseFloat($('#batV').value),
+      dod: parseFloat($('#batDoD').value)
+    });
+    const el = $('#batResult');
+    el.classList.remove('hidden');
+    el.innerHTML = `<div class="label">Required Capacity</div>
+      <div class="value">${r.capacityAh.toFixed(1)} Ah</div>
+      <p class="text-sm text-muted mt-8">${r.note}</p>`;
+  },
+
+  calcWater() {
+    const r = Calculators.waterNeed({
+      population: parseInt($('#watPop').value),
+      litersPerPerson: parseFloat($('#watLpp').value)
+    });
+    const el = $('#watResult');
+    el.classList.remove('hidden');
+    el.innerHTML = `<div class="label">Water Demand</div>
+      <div class="value">Daily: ${r.dailyLiters.toLocaleString()} L<br>
+      Weekly: ${r.weeklyLiters.toLocaleString()} L<br>
+      Monthly: ${r.monthlyLiters.toLocaleString()} L</div>
+      <p class="text-sm text-muted mt-8">${r.note}</p>`;
+  },
+
+  calcKE() {
+    const m = parseFloat($('#keM').value);
+    const v = parseFloat($('#keV').value);
+    const ke = Calculators.kineticEnergy(m, v);
+    const el = $('#keResult');
+    el.classList.remove('hidden');
+    el.innerHTML = `<div class="label">Kinetic Energy</div><div class="value">${ke.toPrecision(8)} J</div>`;
+  },
+
+  calcPE() {
+    const m = parseFloat($('#peM').value);
+    const h = parseFloat($('#peH').value);
+    const g = parseFloat($('#peG').value);
+    const pe = Calculators.potentialEnergy(m, h, g);
+    const el = $('#peResult');
+    el.classList.remove('hidden');
+    el.innerHTML = `<div class="label">Potential Energy</div><div class="value">${pe.toPrecision(8)} J</div>`;
+  },
+
+  calcEnvSolar() {
+    const r = Calculators.solarEstimate({
+      dailyWh: parseFloat($('#envDailyWh').value),
+      peakSunHours: parseFloat($('#envPSH').value),
+      systemEfficiency: parseFloat($('#envEff').value)
+    });
+    const el = $('#envSolarResult');
+    el.classList.remove('hidden');
+    el.innerHTML = `<div class="label">Array Size</div><div class="value">${r.arrayWatts.toFixed(1)} W</div><p class="text-sm text-muted">${r.note}</p>`;
+  },
+
+  calcEnvTemp() {
+    const val = parseFloat($('#envTempVal').value);
+    const from = $('#envTempFrom').value;
+    const to = $('#envTempTo').value;
+    const r = Calculators.unitConvert(val, from, to, 'temperature');
+    const el = $('#envTempResult');
+    el.classList.remove('hidden');
+    el.innerHTML = `<div class="label">Result</div><div class="value">${r.toFixed(2)} °${to}</div>`;
+  },
+
+  calcEnvWater() {
+    const r = Calculators.waterNeed({
+      population: parseInt($('#envPop').value),
+      litersPerPerson: parseFloat($('#envLpp').value)
+    });
+    const el = $('#envWaterResult');
+    el.classList.remove('hidden');
+    el.innerHTML = `<div class="label">Demand</div><div class="value">${r.dailyLiters.toLocaleString()} L/day · ${r.monthlyLiters.toLocaleString()} L/month</div>`;
+  },
+
+  async renderMissions() {
+    const el = $('#missionList');
+    if (!el) return;
+    let missions = MissionsData;
+    if (AppState.dbReady) {
+      const stored = await DB.getAll('missions');
+      if (stored.length) missions = stored;
+    }
+    el.innerHTML = missions.map(m => `
+      <div class="mission-card">
+        <div class="flex-between mb-8">
+          <strong>${escapeHtml(m.title)}</strong>
+          <span class="mission-status ${m.status}">${m.status.toUpperCase()}</span>
+        </div>
+        <p class="text-sm text-muted mb-8">${escapeHtml(m.description)}</p>
+        <div class="text-sm mb-8"><span class="tag">${escapeHtml(m.category)}</span></div>
+        <div class="text-sm">Objectives:</div>
+        <ul class="text-sm text-muted" style="margin-left:16px">
+          ${m.objectives.map(o => `<li>${escapeHtml(o)}</li>`).join('')}
+        </ul>
+        <div class="btn-group mt-12">
+          ${m.status === 'available' ? `<button class="btn primary" onclick="App.startMission('${m.id}')">Start Mission</button>` : ''}
+          ${m.status === 'active' ? `<button class="btn primary" onclick="App.progressMission('${m.id}')">Advance Progress</button>` : ''}
+          ${m.status === 'completed' ? `<span class="text-cyan text-sm">Completed</span>` : ''}
+          ${m.relatedArticles ? m.relatedArticles.map(aid => `<button class="btn" onclick="App.openArticle('${aid}')">Related Knowledge</button>`).join('') : ''}
+        </div>
+        ${m.status === 'active' ? `<div class="mt-8"><div class="resource-bar"><div class="resource-fill energy" style="width:${m.progress}%"></div></div><span class="text-sm mono">${m.progress}%</span></div>` : ''}
+      </div>
+    `).join('');
+  },
+
+  async startMission(id) {
+    let missions = AppState.dbReady ? await DB.getAll('missions') : MissionsData;
+    const m = missions.find(x => x.id === id);
+    if (!m || m.status !== 'available') return;
+    m.status = 'active';
+    m.progress = 10;
+    if (AppState.dbReady) await DB.put('missions', m);
+    else {
+      const idx = MissionsData.findIndex(x => x.id === id);
+      if (idx >= 0) MissionsData[idx] = m;
+    }
+    log('Mission started: ' + m.title, 'ok');
+    toast('Mission started', 'ok');
+    this.renderMissions();
+  },
+
+  async progressMission(id) {
+    let missions = AppState.dbReady ? await DB.getAll('missions') : MissionsData;
+    const m = missions.find(x => x.id === id);
+    if (!m || m.status !== 'active') return;
+    m.progress = Math.min(100, m.progress + 30);
+    if (m.progress >= 100) {
+      m.status = 'completed';
+      log('Mission completed: ' + m.title, 'ok');
+      toast('Mission completed!', 'ok');
+      if (m.rewards && m.rewards.knowledge) {
+        toast('Knowledge unlocked: related article available', 'ok');
+      }
+    }
+    if (AppState.dbReady) await DB.put('missions', m);
+    else {
+      const idx = MissionsData.findIndex(x => x.id === id);
+      if (idx >= 0) MissionsData[idx] = m;
+    }
+    this.renderMissions();
+  },
+
+  async renderManager() {
+    const status = $('#dbStatus');
+    const list = $('#userArticles');
+    if (!status) return;
+    if (!AppState.dbReady) {
+      status.innerHTML = '<span class="text-muted">IndexedDB not available</span>';
+      return;
+    }
+    const counts = {
+      articles: await DB.count('articles'),
+      settlements: await DB.count('settlements'),
+      missions: await DB.count('missions'),
+      logs: await DB.count('logs')
+    };
+    status.innerHTML = `
+      <table>
+        <tr><td>Articles</td><td class="mono">${counts.articles}</td></tr>
+        <tr><td>Settlements</td><td class="mono">${counts.settlements}</td></tr>
+        <tr><td>Missions</td><td class="mono">${counts.missions}</td></tr>
+        <tr><td>Log Entries</td><td class="mono">${counts.logs}</td></tr>
+      </table>`;
+
+    // Show user-created (non-seed) articles — for simplicity show all with edit option
+    const articles = await DB.getAll('articles');
+    const custom = articles.filter(a => a.id.startsWith('custom_') || a.userCreated);
+    list.innerHTML = custom.length ? custom.map(a => `
+      <div class="article-item">
+        <div class="article-title">${escapeHtml(a.title)}</div>
+        <div class="article-meta"><span class="article-domain">${escapeHtml(a.domain)}</span></div>
+        <div class="btn-group mt-8">
+          <button class="btn" onclick="App.openArticle('${a.id}')">View</button>
+          <button class="btn danger" onclick="App.deleteArticle('${a.id}')">Delete</button>
+        </div>
+      </div>
+    `).join('') : '<p class="text-muted text-sm">No custom articles yet. Create one or import a JSON archive.</p>';
+  },
+
+  showCreateArticle() {
+    showModal(`
+      <h2>Create Article</h2>
+      <div class="form-row"><label>Title</label><input id="newTitle"></div>
+      <div class="form-row"><label>Domain</label>
+        <select id="newDomain">
+          <option>Physics</option><option>Mathematics</option><option>Chemistry</option>
+          <option>Biology</option><option>Computer Science</option><option>Engineering</option>
+          <option>Energy Systems</option><option>Agriculture and Food</option>
+          <option>Medicine and Public Health</option><option>Earth and Space Sciences</option>
+          <option>Architecture and Civilization</option>
+        </select>
+      </div>
+      <div class="form-row"><label>Category</label><input id="newCategory"></div>
+      <div class="form-row"><label>Summary</label><textarea id="newSummary" rows="2"></textarea></div>
+      <div class="form-row"><label>Content (HTML allowed for formatting)</label><textarea id="newContent" rows="6"></textarea></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="hideModal()">Cancel</button>
+        <button class="btn primary" onclick="App.createArticle()">Save</button>
+      </div>
+    `);
+  },
+
+  async createArticle() {
+    const title = $('#newTitle')?.value?.trim();
+    if (!title) { toast('Title required', 'err'); return; }
+    const article = {
+      id: 'custom_' + Date.now(),
+      title,
+      domain: $('#newDomain')?.value || 'Engineering',
+      category: $('#newCategory')?.value || 'General',
+      summary: $('#newSummary')?.value || '',
+      content: '<p>' + escapeHtml($('#newContent')?.value || '') + '</p>',
+      keyConcepts: [],
+      equations: [],
+      applications: [],
+      related: [],
+      references: ['User-created'],
+      lastUpdated: new Date().toISOString().slice(0, 10),
+      classification: 'User Contribution',
+      userCreated: true
+    };
+    if (AppState.dbReady) await DB.put('articles', article);
+    this.articles.push(article);
+    SearchEngine.buildIndex(this.articles);
+    hideModal();
+    toast('Article created', 'ok');
+    log('Article created: ' + title, 'ok');
+    if (AppState.currentView === 'manager') this.renderManager();
+  },
+
+  async deleteArticle(id) {
+    if (!confirm('Delete this article?')) return;
+    if (AppState.dbReady) await DB.delete('articles', id);
+    this.articles = this.articles.filter(a => a.id !== id);
+    SearchEngine.buildIndex(this.articles);
+    toast('Article deleted', 'ok');
+    this.renderManager();
+  },
+
+  exportArchive() {
+    const data = {
+      exportVersion: 1,
+      exportedAt: new Date().toISOString(),
+      articles: this.articles
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'afterzero-archive-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Archive exported', 'ok');
+    log('Archive exported');
+  },
+
+  triggerImport() {
+    $('#importFile')?.click();
+  },
+
+  async importArchive(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (!data.articles || !Array.isArray(data.articles)) {
+        toast('Invalid archive format', 'err');
+        return;
+      }
+      // Validate and import
+      let imported = 0;
+      for (const a of data.articles) {
+        if (!a.id || !a.title || !a.domain) continue;
+        // Sanitize content — strip scripts
+        if (a.content) a.content = a.content.replace(/<script[\s\S]*?<\/script>/gi, '');
+        if (AppState.dbReady) await DB.put('articles', a);
+        const existing = this.articles.findIndex(x => x.id === a.id);
+        if (existing >= 0) this.articles[existing] = a;
+        else this.articles.push(a);
+        imported++;
+      }
+      SearchEngine.buildIndex(this.articles);
+      toast(`Imported ${imported} articles`, 'ok');
+      log(`Imported ${imported} articles`);
+      if (AppState.currentView === 'manager') this.renderManager();
+    } catch (e) {
+      toast('Import failed: ' + e.message, 'err');
+    }
+    event.target.value = '';
+  },
+
+  async fullBackup() {
+    if (!AppState.dbReady) { toast('Database not available', 'err'); return; }
+    const backup = {
+      version: 1,
+      created: new Date().toISOString(),
+      articles: await DB.getAll('articles'),
+      settlements: await DB.getAll('settlements'),
+      missions: await DB.getAll('missions'),
+      settings: await DB.getAll('settings')
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'afterzero-full-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Full backup created', 'ok');
+  },
+
+  setLang(lang) {
+    AppState.lang = lang;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+    this.applyI18n();
+    this.navigate(AppState.currentView);
+    toast(lang === 'fa' ? 'زبان: فارسی' : 'Language: English', 'ok');
+  },
+
+  applyI18n() {
+    $$('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (I18N[AppState.lang] && I18N[AppState.lang][key]) {
+        el.textContent = I18N[AppState.lang][key];
+      }
+    });
+  },
+
+  runDiagnostics() {
+    const set = (id, val) => { const el = $(id); if (el) el.textContent = val; };
+    set('#diagDB', AppState.dbReady ? 'Available' : 'Unavailable');
+    set('#diagGL', AppState.webglSupported ? 'Supported' : 'Not supported');
+    set('#diagWASM', AppState.wasmSupported ? 'Supported (no custom module compiled in this build)' : 'Not supported');
+    set('#diagWorkers', typeof Worker !== 'undefined' ? 'Supported' : 'Not supported');
+    set('#diagCrypto', typeof crypto !== 'undefined' && crypto.subtle ? 'Available' : 'Unavailable');
+    set('#diagSW', 'navigator' in self && 'serviceWorker' in navigator ? 'API present (requires HTTPS/localhost for registration)' : 'Not available');
+    if (AppState.dbReady) {
+      DB.count('articles').then(c => set('#diagArticles', String(c)));
+    } else {
+      set('#diagArticles', String(this.articles.length) + ' (memory)');
+    }
+  },
+
+  togglePerf() {
+    const p = $('#perf-panel');
+    p.classList.toggle('show');
+    if (p.classList.contains('show')) {
+      this.perfInterval = setInterval(() => {
+        p.innerHTML = `FPS: — (rAF)<br>WebGL: ${AppState.webglSupported ? 'OK' : 'NO'}<br>DB: ${AppState.dbReady ? 'OK' : 'NO'}<br>View: ${AppState.currentView}<br>Articles: ${this.articles.length}`;
+      }, 1000);
+    } else {
+      clearInterval(this.perfInterval);
+    }
+  },
+
+  clearLogs() {
+    AppState.logs = [];
+    toast('Logs cleared', 'ok');
+    if (AppState.currentView === 'overview') this.navigate('overview');
+  },
+
+  startClock() {
+    const tick = () => {
+      const now = new Date();
+      const el = $('#clock');
+      if (el) el.textContent = now.toLocaleTimeString();
+      // Advance fictional date slowly (1 real day ≈ negligible; just show static + clock)
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+};
+
+// Expose for inline handlers
+window.App = App;
+window.PlanetEngine = PlanetEngine;
+window.hideModal = hideModal;
+window.SimulationEngine = SimulationEngine;
+
+// Boot
+document.addEventListener('DOMContentLoaded', () => App.init());
+
+})();
+</script>
+</body>
+</html>
